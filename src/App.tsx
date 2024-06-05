@@ -6,7 +6,7 @@ const App = () =>{
     return (
         <ChakraProvider>
             <Navbar />
-            This is a test
+            This is a test !
         </ChakraProvider>
     );
 }
