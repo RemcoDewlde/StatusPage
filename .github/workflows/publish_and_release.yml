@@ -85,7 +85,7 @@ jobs:
             github.rest.repos.updateRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              release_id: needs.create-release.outputs.release_id,
+              release_id: ${{ needs.create-release.outputs.release_id }},
               draft: false,
               prerelease: false
             })
