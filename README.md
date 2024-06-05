@@ -1,7 +1,4 @@
-# Tauri + React + Typescript
+[![release for main](https://github.com/RemcoDewlde/StatusPage/actions/workflows/publish_and_release.yml/badge.svg)](https://github.com/RemcoDewlde/StatusPage/actions/workflows/publish_and_release.yml)
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
-
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+# Status Page App
+keep track of all the statuspage.io status pages you are interested in
