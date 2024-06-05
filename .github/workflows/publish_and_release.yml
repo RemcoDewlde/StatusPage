@@ -1,6 +1,6 @@
-name: 'main'
+name: 'release for main'
 
-on: pull_request
+on: [pull_request]
 
 jobs:
   create-release:
