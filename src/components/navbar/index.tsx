@@ -1,9 +1,9 @@
 import {useEffect, useState} from 'react';
 import {invoke} from '@tauri-apps/api/tauri'
 import {Command} from "../../utils/command.enum.ts";
-import {Route, Routes} from "react-router-dom";
+import {Link} from "react-router-dom";
 import routes from "../../providers/routeProvider.ts";
-import {Navbar as ShadNavbar, NavbarContent, NavbarLink} from '@shadcn/ui'; // Importing ShadCN components
+
 
 const Navbar = () => {
     const [name, setName] = useState('dev');
@@ -22,31 +22,24 @@ const Navbar = () => {
     }, []);
 
     return (
-        <ShadNavbar>
-            <NavbarContent>
-                <div className="flex items-center justify-between">
-                    <div className="text-xl font-bold">
-                        {name}
-                    </div>
-                    <div className="flex space-x-4">
-                        {routes.map((route, index) => (
-                            <NavbarLink key={index} href={route.path} className="hover:text-blue-500">
-                                {route.name}
-                            </NavbarLink>
-                        ))}
-                    </div>
+        <nav className="bg-gray-800 p-4">
+            <div className="container mx-auto flex justify-between items-center">
+                <div className="text-white text-xl font-bold">
+                    {name}
                 </div>
-            </NavbarContent>
-            <Routes>
-                {routes.map((route, index) => (
-                    <Route
-                        key={index}
-                        path={route.path}
-                        element={<route.component/>}
-                    />
-                ))}
-            </Routes>
-        </ShadNavbar>
+                <div className="flex space-x-4">
+                    {routes.map((route, index) => (
+                        <Link
+                            key={index}
+                            to={route.path}
+                            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                        >
+                            {route.name}
+                        </Link>
+                    ))}
+                </div>
+            </div>
+        </nav>
     );
 };
 
