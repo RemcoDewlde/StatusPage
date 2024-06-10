@@ -4,7 +4,6 @@ import {Command} from "../../utils/command.enum.ts";
 import {Link} from "react-router-dom";
 import routes from "../../providers/routeProvider.ts";
 
-
 const Navbar = () => {
     const [name, setName] = useState('dev');
 
@@ -34,7 +33,10 @@ const Navbar = () => {
                             to={route.path}
                             className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                         >
-                            {route.name}
+                            <span className="flex items-center space-x-1">
+                                <route.icon />
+                                <span>{route.name}</span>
+                            </span>
                         </Link>
                     ))}
                 </div>
