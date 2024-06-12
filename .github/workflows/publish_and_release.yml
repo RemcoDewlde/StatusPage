@@ -48,10 +48,10 @@ jobs:
         include:
           - platform: 'macos-latest' # for Arm based macs (M1 and above).
             args: '--target aarch64-apple-darwin'
-          - platform: 'macos-latest' # for Intel based macs.
-            args: '--target x86_64-apple-darwin'
-          - platform: 'ubuntu-20.04'
-            args: ''
+#          - platform: 'macos-latest' # for Intel based macs.
+#            args: '--target x86_64-apple-darwin'
+#          - platform: 'ubuntu-20.04'
+#            args: ''
           - platform: 'windows-latest'
             args: ''
 
@@ -79,6 +79,28 @@ jobs:
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
+
+  update-gist:
+    needs: build-tauri
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh -y
+      - name: Download latest.json
+        run: |
+          gh release download ${{ needs.create-release.outputs.release_id }} --pattern latest.json --dir .
+      - name: Read latest.json content
+        id: read_latest_json
+        run: |
+          content=$(cat latest.json)
+          echo "::set-output name=content::$content"
+      - name: Update Gist
+        uses: skx/github-action-update-file@v2
+        with:
+          token: ${{ secrets.GIST_TOKEN }}
+          gist_id: "2b878b3e42effa57334b9fa777626225"
+          filename: latest.json
+          content: ${{ steps.read_latest_json.outputs.content }}
 
   publish-release:
     permissions:
