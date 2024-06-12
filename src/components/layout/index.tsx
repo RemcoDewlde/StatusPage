@@ -1,5 +1,6 @@
 import Navbar from "../navbar";
 import {Outlet} from "react-router-dom";
+import Toast from "../toast";
 
 
 const Layout = () => {
@@ -7,6 +8,9 @@ const Layout = () => {
         <>
             <Navbar/>
             <div>
+                <Toast message={"test"} type={"success"} id={0} removeToast={function (id: number): void {
+                    throw new Error("Function not implemented.");
+                }}  />
                 <Outlet />
             </div>
         </>
