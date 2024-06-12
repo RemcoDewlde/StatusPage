@@ -67,6 +67,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY}}
+          TAURI_PUBLIC_KEY: ${{ secrets.TAURI_PUBLIC_KEY}}
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
 
