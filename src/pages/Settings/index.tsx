@@ -10,8 +10,8 @@ const Settings = () => {
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const response = await invoke(Command.GetSettings);
-                const { dashboardName, settings } = response;
+                // const response = await invoke(Command.GetSettings);
+                // const { dashboardName, settings } = response;
                 setDashboardName(dashboardName);
                 setSettings(settings);
             } catch (error) {
@@ -22,24 +22,24 @@ const Settings = () => {
         fetchSettings();
     }, []);
 
-    const handleDashboardNameChange = (e) => {
-        setDashboardName(e.target.value);
-    };
+    // const handleDashboardNameChange = (e) => {
+    //     setDashboardName(e.target.value);
+    // };
 
-    const handleSettingChange = (index: number, field: any, value: string) => {
-        const newSettings = [...settings];
-        newSettings[index][field] = value;
-        setSettings(newSettings);
-    };
+    // const handleSettingChange = (index: number, field: any, value: string) => {
+    //     const newSettings = [...settings];
+    //     // newSettings[index][field] = value;
+    //     setSettings(newSettings);
+    // };
 
     const addSetting = () => {
         setSettings([...settings, { name: '', url: '' }]);
     };
 
-    const deleteSetting = (index: number) => {
-        const newSettings = settings.filter((_, i) => i !== index);
-        setSettings(newSettings);
-    };
+    // const deleteSetting = (index: number) => {
+    //     const newSettings = settings.filter((_, i) => i !== index);
+    //     setSettings(newSettings);
+    // };
 
     const saveSettings = async () => {
         try {
@@ -57,7 +57,7 @@ const Settings = () => {
                 <input
                     type="text"
                     value={dashboardName}
-                    onChange={handleDashboardNameChange}
+                    // onChange={handleDashboardNameChange}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
             </div>
@@ -77,7 +77,7 @@ const Settings = () => {
                                 <input
                                     type="text"
                                     value={setting.name}
-                                    onChange={(e) => handleSettingChange(index, 'name', e.target.value)}
+                                    // onChange={(e) => handleSettingChange(index, 'name', e.target.value)}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 />
                             </td>
@@ -85,7 +85,7 @@ const Settings = () => {
                                 <input
                                     type="text"
                                     value={setting.url}
-                                    onChange={(e) => handleSettingChange(index, 'url', e.target.value)}
+                                    // onChange={(e) => handleSettingChange(index, 'url', e.target.value)}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 />
                             </td>
@@ -98,16 +98,16 @@ const Settings = () => {
                                     </div>
                                     <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
                                         <div className="px-1 py-1">
-                                            <Menu.Item>
-                                                {({ active }) => (
-                                                    <button
-                                                        onClick={() => deleteSetting(index)}
-                                                        className={`${active ? 'bg-red-500 text-white' : 'text-gray-900'} group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                )}
-                                            </Menu.Item>
+                                            {/*<Menu.Item>*/}
+                                            {/*    {({ active }) => (*/}
+                                            {/*        <button*/}
+                                            {/*            onClick={() => deleteSetting(index)}*/}
+                                            {/*            className={`${active ? 'bg-red-500 text-white' : 'text-gray-900'} group flex rounded-md items-center w-full px-2 py-2 text-sm`}*/}
+                                            {/*        >*/}
+                                            {/*            Delete*/}
+                                            {/*        </button>*/}
+                                            {/*    )}*/}
+                                            {/*</Menu.Item>*/}
                                         </div>
                                     </Menu.Items>
                                 </Menu>
