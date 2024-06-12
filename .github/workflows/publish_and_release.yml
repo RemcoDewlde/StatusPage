@@ -91,14 +91,14 @@ jobs:
 
       - name: Get Release ID
         id: get_release
-        run: echo "::set-output name=release_id::${{ needs.create-release.outputs.release_id }}"
+        run: echo "release_id=${{ needs.create-release.outputs.release_id }}" >> $GITHUB_ENV
 
       - name: List Release Assets
         id: list_assets
         uses: actions/github-script@v6
         with:
           script: |
-            const release_id = ${{ steps.get_release.outputs.release_id }};
+            const release_id = process.env.release_id;
             const assets = await github.rest.repos.listReleaseAssets({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -108,11 +108,11 @@ jobs:
             if (!asset) {
               throw new Error('latest.json not found in release assets');
             }
-            return asset.browser_download_url;
+            core.setOutput('download_url', asset.browser_download_url);
 
       - name: Download latest.json
         run: |
-          curl -L ${{ steps.list_assets.outputs.result }} -o latest.json
+          curl -L ${{ steps.list_assets.outputs.download_url }} -o latest.json
 
       - name: Update Gist
         uses: exuanbo/actions-deploy-gist@v1
