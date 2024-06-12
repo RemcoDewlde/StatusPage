@@ -11,7 +11,7 @@ jobs:
       contents: write
     runs-on: ubuntu-22.04
     outputs:
-      release_id: ${{ steps.create-release.outputs.result }}
+      release_id: ${{ steps.create-release.outputs.release_id }}
 
     steps:
       - uses: actions/checkout@v3
@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 21
       - name: get version
-        run: echo "PACKAGE_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+        run: echo "PACKAGE_VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
       - name: create release
         id: create-release
         uses: actions/github-script@v6
@@ -34,7 +34,7 @@ jobs:
               body: 'Take a look at the assets to download and install this app.',
               draft: true,
               prerelease: false
-            })
+            });
             return data.id
 
   build-tauri:
@@ -47,12 +47,12 @@ jobs:
         include:
           - platform: 'macos-latest' # for Arm based macs (M1 and above).
             args: '--target aarch64-apple-darwin'
-          #          - platform: 'macos-latest' # for Intel based macs.
-          #            args: '--target x86_64-apple-darwin'
-          #          - platform: 'ubuntu-20.04'
-          #            args: ''
-#          - platform: 'windows-latest'
-#            args: ''
+          # - platform: 'macos-latest' # for Intel based macs.
+          #   args: '--target x86_64-apple-darwin'
+          # - platform: 'ubuntu-20.04'
+          #   args: ''
+          # - platform: 'windows-latest'
+          #   args: ''
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -80,6 +80,7 @@ jobs:
           releaseId: ${{ needs.create-release.outputs.release_id }}
 
   publish-to-gist:
+    needs: build-tauri
     runs-on: ubuntu-latest
 
     steps:
@@ -110,27 +111,25 @@ jobs:
                 accept: 'application/octet-stream'
               }
             });
-            return download.data;
+            const content = Buffer.from(download.data).toString('utf8');
+            return content;
 
       - name: Create Gist
+        id: create-gist
         uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const gistContent = Buffer.from(download-asset.outputs.result).toString('base64');
+            const gistContent = Buffer.from(`$${steps.download-asset.outputs.result}`).toString('utf8');
             const response = await github.rest.gists.create({
               files: {
-                'your-asset-file.txt': { // Replace with your asset file name
+                'latest.json': { // Replace with your asset file name
                   content: gistContent
                 }
               },
               public: true
             });
             core.setOutput('gist_url', response.data.html_url);
-
-      - name: Output Gist URL
-        run:
-          echo "Gist URL: ${{ steps.create-gist.outputs.gist_url }}"
 
   publish-release:
     permissions:
@@ -146,10 +145,10 @@ jobs:
           release_id: ${{ needs.create-release.outputs.release_id }}
         with:
           script: |
-            github.rest.repos.updateRelease({
+            await github.rest.repos.updateRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: process.env.release_id,
               draft: false,
               prerelease: false
-            })
+            });
