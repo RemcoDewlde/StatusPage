@@ -90,37 +90,40 @@ jobs:
         id: get_release
         run: echo "RELEASE_ID=${{ needs.create-release.outputs.release_id }}" >> $GITHUB_ENV
 
-      - name: List Release Assets
-        id: list_assets
-        uses: actions/github-script@v6
-        env:
-          RELEASE_ID: ${{ env.RELEASE_ID }}
+      - name: Fetch latest.json from release
+        uses: jwortmann/fetch-github-release-asset@v1
         with:
-          script: |
-            const release_id = process.env.RELEASE_ID;
-            const assets = await github.rest.repos.listReleaseAssets({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: release_id,
-            });
-            const asset = assets.data.find(asset => asset.name === 'latest.json');
-            if (!asset) {
-              throw new Error('latest.json not found in release assets');
-            }
-            core.setOutput('download_url', asset.browser_download_url);
-
-      - name: Download latest.json
-        run: |
-          curl -L ${{ steps.list_assets.outputs.download_url }} -o latest.json
+          repo: ${{ github.repository }}
+          release_id: ${{ env.RELEASE_ID }}
+          asset_name: latest.json
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update Gist
-        uses: softprops/action-gh-release@v1
+        uses: actions/github-script@v6
         with:
-          files: latest.json
+          script: |
+            const fs = require('fs');
+            const gistId = process.env.GIST_ID;
+            const githubToken = process.env.GITHUB_TOKEN;
+            const octokit = github.getOctokit(githubToken);
+            
+            const gist = await octokit.gists.get({
+              gist_id: gistId,
+            });
+            
+            const filename = 'latest.json';
+            const fileContent = fs.readFileSync('latest.json', 'utf8');
+            
+            const files = gist.data.files;
+            files[filename] = { content: fileContent };
+            
+            await octokit.gists.update({
+              gist_id: gistId,
+              files: files,
+            });
         env:
           GITHUB_TOKEN: ${{ secrets.GIST_TOKEN }}
           GIST_ID: 2b878b3e42effa57334b9fa777626225
-
 
   publish-release:
     permissions:
