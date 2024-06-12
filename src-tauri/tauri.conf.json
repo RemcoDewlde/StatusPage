@@ -23,7 +23,7 @@
         "https://github.com/RemcoDewlde/StatusPage/releases/download/app-v{{current_version}}/statuspageio-app_{{current_version}}_{{arch}}"
       ],
       "dialog": true,
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEM2N0ZFNUU5NkFGMUI2MUYKUldRZnR2RnE2ZVYveG5DaTRaNTlncExJVmIzcnNuMUpHN0JRUDRUTXZKeEZIenZLUSt2MmxQangK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQxMkIzMzY4NENEMUQyMjUKUldRbDB0Rk1hRE1yMFNKcjBxdlVWNFZRc2lBOGRhaFNtQnhXN1llOE85UzJ4SDU2c3l4TVZQU1MK",
       "windows": {
         "installMode": "passive"
       }
