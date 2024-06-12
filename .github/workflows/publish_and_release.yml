@@ -91,14 +91,16 @@ jobs:
 
       - name: Get Release ID
         id: get_release
-        run: echo "release_id=${{ needs.create-release.outputs.release_id }}" >> $GITHUB_ENV
+        run: echo "RELEASE_ID=${{ needs.create-release.outputs.release_id }}" >> $GITHUB_ENV
 
       - name: List Release Assets
         id: list_assets
         uses: actions/github-script@v6
+        env:
+          RELEASE_ID: ${{ env.RELEASE_ID }}
         with:
           script: |
-            const release_id = process.env.release_id;
+            const release_id = process.env.RELEASE_ID;
             const assets = await github.rest.repos.listReleaseAssets({
               owner: context.repo.owner,
               repo: context.repo.repo,
