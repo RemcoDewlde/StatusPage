@@ -80,57 +80,48 @@ jobs:
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
 
-  publish-to-gist:
+  update-gist:
     needs: build-tauri
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Download Release Asset
-        id: download-asset
-        uses: actions/github-script@v4
+      - name: Get Release ID
+        id: get_release
+        run: echo "RELEASE_ID=${{ needs.create-release.outputs.release_id }}" >> $GITHUB_ENV
+
+      - name: List Release Assets
+        id: list_assets
+        uses: actions/github-script@v6
+        env:
+          RELEASE_ID: ${{ env.RELEASE_ID }}
         with:
           script: |
-            const release_id = context.payload.release.id;
-            const asset_name = 'latest.json';
+            const release_id = process.env.RELEASE_ID;
             const assets = await github.rest.repos.listReleaseAssets({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              release_id: release_id
+              release_id: release_id,
             });
-            const asset = assets.data.find(a => a.name === asset_name);
+            const asset = assets.data.find(asset => asset.name === 'latest.json');
             if (!asset) {
-              throw new Error(`Asset ${asset_name} not found`);
+              throw new Error('latest.json not found in release assets');
             }
-            const download = await github.rest.repos.getReleaseAsset({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              asset_id: asset.id,
-              headers: {
-                accept: 'application/octet-stream'
-              }
-            });
-            const content = Buffer.from(download.data).toString('utf8');
-            return content;
+            core.setOutput('download_url', asset.browser_download_url);
 
-      - name: Create Gist
-        id: create-gist
-        uses: actions/github-script@v4
+      - name: Download latest.json
+        run: |
+          curl -L ${{ steps.list_assets.outputs.download_url }} -o latest.json
+
+      - name: Update Gist
+        uses: softprops/action-gh-release@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const gistContent = Buffer.from(`$${steps.download-asset.outputs.result}`).toString('utf8');
-            const response = await github.rest.gists.create({
-              files: {
-                'latest.json': { // Replace with your asset file name
-                  content: gistContent
-                }
-              },
-              public: true
-            });
-            core.setOutput('gist_url', response.data.html_url);
+          files: latest.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIST_TOKEN }}
+          GIST_ID: 2b878b3e42effa57334b9fa777626225
+
 
   publish-release:
     permissions:
