@@ -1,37 +1,19 @@
-import {ReactNode, useEffect, useState} from 'react';
-import { Box, Flex, Link, HStack, IconButton, useDisclosure, VStack } from '@chakra-ui/react';
-import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
-import { invoke } from '@tauri-apps/api/tauri'
+import {useEffect, useState} from 'react';
+import {invoke} from '@tauri-apps/api/tauri'
 import {Command} from "../../utils/command.enum.ts";
-
-const Links = ['Home', 'About', 'Contact'];
-
-const NavLink = ({ children }: { children: ReactNode }) => (
-    <Link
-        px={2}
-        py={1}
-        rounded={'md'}
-        _hover={{
-            textDecoration: 'none',
-            bg: 'gray.200',
-        }}
-        href={'#'}>
-        {children}
-    </Link>
-);
+import {Link} from "react-router-dom";
+import routes from "../../providers/routeProvider.ts";
 
 const Navbar = () => {
-    const [name, setName] = useState('');
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [name, setName] = useState('dev');
 
     useEffect(() => {
         const fetchName = async () => {
             try {
                 let appName: string = await invoke(Command.GetApplicationName);
-                setName(appName.toString() ?? 'dev');
+                setName(appName.toString());
             } catch (error) {
                 console.error("Error fetching name:", error);
-                setName('dev');
             }
         };
 
@@ -39,40 +21,28 @@ const Navbar = () => {
     }, []);
 
     return (
-        <Box bg="gray.100" px={4}>
-            <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
-                <IconButton
-                    size={'md'}
-                    icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
-                    aria-label={'Open Menu'}
-                    display={{ md: 'none' }}
-                    onClick={isOpen ? onClose : onOpen}
-                />
-                <HStack spacing={8} alignItems={'center'}>
-                    <Box>{name}</Box>
-                    <HStack
-                        as={'nav'}
-                        spacing={4}
-                        display={{ base: 'none', md: 'flex' }}>
-                        {Links.map((link) => (
-                            <NavLink key={link}>{link}</NavLink>
-                        ))}
-                    </HStack>
-                </HStack>
-            </Flex>
-
-            {isOpen ? (
-                <Box pb={4} display={{ md: 'none' }}>
-                    <VStack as={'nav'} spacing={4}>
-                        {Links.map((link) => (
-                            <NavLink key={link}>{link}</NavLink>
-                        ))}
-                    </VStack>
-                </Box>
-            ) : null}
-        </Box>
+        <nav className="bg-gray-800 p-4">
+            <div className="container mx-auto flex justify-between items-center">
+                <div className="text-white text-xl font-bold">
+                    {name}
+                </div>
+                <div className="flex space-x-4">
+                    {routes.map((route, index) => (
+                        <Link
+                            key={index}
+                            to={route.path}
+                            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                        >
+                            <span className="flex items-center space-x-1">
+                                <route.icon />
+                                <span>{route.name}</span>
+                            </span>
+                        </Link>
+                    ))}
+                </div>
+            </div>
+        </nav>
     );
 };
-
 
 export default Navbar;

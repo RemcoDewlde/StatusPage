@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "statuspageio-app",
-    "version": "0.0.2"
+    "version": "0.0.3"
   },
   "tauri": {
     "allowlist": {
@@ -15,6 +15,17 @@
       "shell": {
         "all": false,
         "open": true
+      }
+    },
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://github.com/RemcoDewlde/StatusPage/releases/download/app-v{{current_version}}/statuspageio-app_{{current_version}}_{{arch}}"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEM2N0ZFNUU5NkFGMUI2MUYKUldRZnR2RnE2ZVYveG5DaTRaNTlncExJVmIzcnNuMUpHN0JRUDRUTXZKeEZIenZLUSt2MmxQangK",
+      "windows": {
+        "installMode": "passive"
       }
     },
     "windows": [
