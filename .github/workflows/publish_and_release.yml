@@ -84,21 +84,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install GitHub CLI
         run: sudo apt-get install gh -y
 
+      - name: Get Release ID
+        id: get_release
+        run: echo "::set-output name=release_id::${{ needs.create-release.outputs.release_id }}"
+
+      - name: List Release Assets
+        id: list_assets
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const release_id = ${{ steps.get_release.outputs.release_id }};
+            const assets = await github.rest.repos.listReleaseAssets({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: release_id,
+            });
+            const asset = assets.data.find(asset => asset.name === 'latest.json');
+            if (!asset) {
+              throw new Error('latest.json not found in release assets');
+            }
+            return asset.browser_download_url;
+
       - name: Download latest.json
         run: |
-          gh release download ${{ needs.create-release.outputs.release_id }} --pattern latest.json --dir .
+          curl -L ${{ steps.list_assets.outputs.result }} -o latest.json
 
       - name: Update Gist
-        uses: snnskn/deploy-to-gist@v1.0.3
+        uses: exuanbo/actions-deploy-gist@v1
         with:
-          gist_id: 2b878b3e42effa57334b9fa777626225
-          filename: latest.json
           token: ${{ secrets.GIST_TOKEN }}
+          gist_id: 2b878b3e42effa57334b9fa777626225
+          file_path: latest.json
+          file_type: text
 
   publish-release:
     permissions:
