@@ -99,28 +99,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update Gist
-        uses: actions/github-script@v6
+        uses: softprops/action-gh-release@v1
         with:
-          script: |
-            const fs = require('fs');
-            const gistId = process.env.GIST_ID;
-            const githubToken = process.env.GITHUB_TOKEN;
-            const octokit = github.getOctokit(githubToken);
-            
-            const gist = await octokit.gists.get({
-              gist_id: gistId,
-            });
-            
-            const filename = 'latest.json';
-            const fileContent = fs.readFileSync('latest.json', 'utf8');
-            
-            const files = gist.data.files;
-            files[filename] = { content: fileContent };
-            
-            await octokit.gists.update({
-              gist_id: gistId,
-              files: files,
-            });
+          files: latest.json
         env:
           GITHUB_TOKEN: ${{ secrets.GIST_TOKEN }}
           GIST_ID: 2b878b3e42effa57334b9fa777626225
