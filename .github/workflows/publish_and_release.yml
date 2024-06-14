@@ -98,20 +98,22 @@ jobs:
           file: latest.json
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh -y
+
       - name: Update Gist
-        uses: softprops/action-gh-release@v1
-        with:
-          files: latest.json
-          version: ${{ needs.create-release.outputs.release_id }}
         env:
           GITHUB_TOKEN: ${{ secrets.GIST_TOKEN }}
           GIST_ID: 2b878b3e42effa57334b9fa777626225
+        run: |
+          echo ${{ secrets.GIST_TOKEN }} | gh auth login --with-token
+          gh gist edit $GIST_ID --add latest.json
 
   publish-release:
     permissions:
       contents: write
     runs-on: ubuntu-20.04
-    needs: [ create-release, build-tauri ]
+    needs: [create-release, build-tauri]
 
     steps:
       - name: publish release
@@ -121,10 +123,10 @@ jobs:
           release_id: ${{ needs.create-release.outputs.release_id }}
         with:
           script: |
-            await github.rest.repos.updateRelease({
+            github.rest.repos.updateRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              release_id: process.env.release_id,
+              release_id: ${{ needs.create-release.outputs.release_id }},
               draft: false,
               prerelease: false
-            });
+            })
