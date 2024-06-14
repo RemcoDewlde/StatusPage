@@ -85,7 +85,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Get Release ID
         id: get_release
@@ -99,23 +99,20 @@ jobs:
           file: latest.json
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install GitHub CLI
-        run: sudo apt-get install gh -y
-
-      - name: Update Gist
-        env:
-          GITHUB_TOKEN: ${{ secrets.GIST_TOKEN }}
-          GIST_ID: 2b878b3e42effa57334b9fa777626225
-        run: |
-          echo ${{ secrets.GIST_TOKEN }} | gh auth login --with-token
-          gh gist edit $GIST_ID --add latest.json
+      - name: Sync Gist
+        uses: popsiclestick/gist-sync-action@v1.2.0
+        with:
+          auth: ${{ secrets.GIST_TOKEN }}
+          gist_url: https://gist.github.com/RemcoDewlde/2b878b3e42effa57334b9fa777626225
+          gist_title: Latest JSON Update
+          gist_description: Updated latest.json file from the release
+          github_file: latest.json
 
   publish-release:
     permissions:
       contents: write
     runs-on: ubuntu-20.04
     needs: [create-release, build-tauri]
-
     steps:
       - name: publish release
         id: publish-release
