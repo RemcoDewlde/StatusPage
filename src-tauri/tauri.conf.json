@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "statuspageio-app",
-    "version": "0.0.2"
+    "version": "0.0.7"
   },
   "tauri": {
     "allowlist": {
@@ -15,6 +15,17 @@
       "shell": {
         "all": false,
         "open": true
+      }
+    },
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://gist.githubusercontent.com/RemcoDewlde/2b878b3e42effa57334b9fa777626225/raw/3475a0d7e716c8e516aeeda557d50d00d76799b0/Latest%2520JSON%2520Update"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQxMkIzMzY4NENEMUQyMjUKUldRbDB0Rk1hRE1yMFNKcjBxdlVWNFZRc2lBOGRhaFNtQnhXN1llOE85UzJ4SDU2c3l4TVZQU1MK",
+      "windows": {
+        "installMode": "passive"
       }
     },
     "windows": [

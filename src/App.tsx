@@ -1,13 +1,32 @@
 import "./App.css";
-import {ChakraProvider} from "@chakra-ui/react";
-import Navbar from "./components/navbar";
+import Layout from "./components/layout";
+import {
+    createBrowserRouter,
+    RouterProvider,
+} from "react-router-dom";
+import Home from "./pages/Home";
+import Settings from "./pages/Settings";
 
+
+const router = createBrowserRouter([
+    {
+        path: "/",
+        element: <Layout />,
+        children: [
+            {
+                index: true,
+                element: <Home />
+            },
+            {
+                path: "settings",
+                element: <Settings />
+            },
+        ]
+    }
+]);
 const App = () =>{
     return (
-        <ChakraProvider>
-            <Navbar />
-            This is a test !
-        </ChakraProvider>
+            <RouterProvider router={router} />
     );
 }
 
