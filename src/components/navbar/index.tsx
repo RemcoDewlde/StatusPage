@@ -6,19 +6,34 @@ import routes from "../../providers/routeProvider.ts";
 
 const Navbar = () => {
     const [name, setName] = useState('dev');
+    const [version, setVersion] = useState('dev');
+
 
     useEffect(() => {
         const fetchName = async () => {
             try {
-                let appName: string = await invoke(Command.GetApplicationName);
+                let appName: string = await invoke(Command.GetApplicationName.toString());
                 setName(appName.toString());
             } catch (error) {
                 console.error("Error fetching name:", error);
             }
         };
-
         fetchName();
     }, []);
+
+    useEffect(() => {
+        const fetchVersion = async () => {
+            try {
+                let appVersion: string = await invoke(Command.GetApplicationVersion.toString());
+                console.log(appVersion)
+                setVersion(appVersion.toString());
+            } catch (error) {
+                console.error("Error fetching version:", error);
+            }
+        }
+
+        fetchVersion();
+    },[]);
 
     return (
         <nav className="bg-gray-800 p-4">
@@ -26,6 +41,9 @@ const Navbar = () => {
                 <div className="text-white text-xl font-bold">
                     {name}
                 </div>
+                <span>
+                    {version}
+                </span>
                 <div className="flex space-x-4">
                     {routes.map((route, index) => (
                         <Link

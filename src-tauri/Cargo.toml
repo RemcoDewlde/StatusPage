@@ -1,7 +1,7 @@
 [package]
 name = "statuspage-app"
 version = "0.0.7"
-description = "A Tauri App"
+description = "A statuspage app built with Tauri."
 authors = ["you"]
 edition = "2021"
 
@@ -14,6 +14,7 @@ tauri-build = { version = "1", features = [] }
 tauri = { version = "1", features = [ "updater", "shell-open"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs" }
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

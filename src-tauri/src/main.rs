@@ -12,6 +12,7 @@ fn get_application_name() -> String {
 }
 
 fn main() {
+    let _ = fix_path_env::fix();
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![get_version, get_application_name])
         .run(tauri::generate_context!())
