@@ -102,6 +102,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: latest.json
+          version: ${{ needs.create-release.outputs.release_id }}
         env:
           GITHUB_TOKEN: ${{ secrets.GIST_TOKEN }}
           GIST_ID: 2b878b3e42effa57334b9fa777626225
