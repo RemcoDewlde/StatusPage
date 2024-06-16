@@ -2790,13 +2790,15 @@ dependencies = [
 
 [[package]]
 name = "statuspage-app"
-version = "0.0.7"
+version = "0.0.8"
 dependencies = [
  "fix-path-env",
+ "reqwest",
  "serde",
  "serde_json",
  "tauri",
  "tauri-build",
+ "thiserror",
 ]
 
 [[package]]

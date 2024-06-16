@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
 import { Menu } from '@headlessui/react';
-import { Command } from "../../utils/command.enum.ts";
+import { Command } from "../../enums/command.enum.ts";
 
 const Settings = () => {
     const [dashboardName, setDashboardName] = useState('');

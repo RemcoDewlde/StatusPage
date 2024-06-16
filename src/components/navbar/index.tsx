@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {invoke} from '@tauri-apps/api/tauri'
-import {Command} from "../../utils/command.enum.ts";
+import {Command} from "../../enums/command.enum.ts";
 import {Link} from "react-router-dom";
 import routes from "../../providers/routeProvider.ts";
 
