@@ -8,7 +8,7 @@ const Layout = () => {
         <>
             <Navbar/>
             <div>
-                <Toast message={"test"} type={"success"} id={0} removeToast={function (): void {
+                <Toast message={"test"} type={"error"} id={0} closable={true} removeToast={function (): void {
                     throw new Error("Function not implemented.");
                 }}  />
                 <Outlet />

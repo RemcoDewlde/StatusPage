@@ -1,5 +1,5 @@
 import { ApiAction } from "../enums/apiActions.enum.ts";
-import { createContext, ReactNode, useCallback, useContext } from "react";
+import { createContext, FunctionComponent, ReactNode, useCallback, useContext, useMemo } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
 
 interface ApiContextType {
@@ -8,18 +8,20 @@ interface ApiContextType {
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
 
-const ApiProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const fetchStatusPageData = useCallback(async (pageId: string, action: ApiAction): Promise<ApiResponse> => {
+const ApiProvider: FunctionComponent<{ children: ReactNode }> = ({ children }) => {
+    const fetchStatusPageData = useCallback(async (page_id: string, action: ApiAction): Promise<ApiResponse> => {
         try {
-            return await invoke<ApiResponse>("fetch_statuspage_data", { page_id: pageId, action });
+            return await invoke<ApiResponse>('fetch_statuspage_data', { pageId: page_id, action: action.toString() });
         } catch (error) {
-            console.error("Error fetching data:", error);
+            console.error('Error fetching data:', error);
             throw error;
         }
     }, []);
 
+    const value = useMemo(() => ({ fetchStatusPageData }), [fetchStatusPageData]);
+
     return (
-        <ApiContext.Provider value={{ fetchStatusPageData }}>
+        <ApiContext.Provider value={value}>
             {children}
         </ApiContext.Provider>
     );

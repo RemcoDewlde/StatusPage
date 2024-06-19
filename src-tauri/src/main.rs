@@ -1,21 +1,16 @@
-// Prevents additional console window on Windows in release, DO NOT REMOVE!!
+// Prevents additional console window on Windows in release, DO NOT Rpub(crate)EMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-use serde;
-use thiserror;
+use serde::{Deserialize, Serialize};
+use thiserror::Error;
 use reqwest;
 use reqwest::Error as ReqwestError;
 
-#[tauri::command]
-fn get_version() -> String {
-    env!("CARGO_PKG_VERSION").to_string()
-}
+mod commands;
 
-#[tauri::command]
-fn get_application_name() -> String {
-    env!("CARGO_PKG_NAME").to_string()
-}
+use commands::{get_version, get_application_name, fetch_statuspage_data};
 
-#[derive(Debug, thiserror::Error)]
+
+#[derive(Debug, Error)]
 enum CustomError {
     #[error("Request failed: {0}")]
     Reqwest(#[from] ReqwestError),
@@ -59,7 +54,7 @@ impl ApiAction {
         }
     }
 
-    fn to_url(&self, page_id: &str) -> String {
+    fn to_url(&self, page_id: &String) -> String {
         match self {
             ApiAction::Summary => format!("https://{}.statuspage.io/api/v2/summary.json", page_id),
             ApiAction::Status => format!("https://{}.statuspage.io/api/v2/status.json", page_id),
@@ -73,20 +68,55 @@ impl ApiAction {
     }
 }
 
-#[derive(serde::Deserialize, serde::Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 struct ApiResponse {
-    status: Option<String>,
-    message: Option<String>,
+    page: Page,
+    components: Option<Vec<Component>>,
+    incidents: Option<Vec<Incident>>,
+    scheduled_maintenances: Option<Vec<Maintenance>>,
+    status: Option<Status>,
 }
 
-#[tauri::command]
-async fn fetch_statuspage_data(page_id: String, action: String) -> Result<ApiResponse, CustomError> {
-    let api_action = ApiAction::from_str(&action)?;
-    let url = api_action.to_url(&page_id);
-    let client = reqwest::Client::new();
-    let response = client.get(&url).send().await?;
-    let data = response.json::<ApiResponse>().await?;
-    Ok(data)
+#[derive(Deserialize, Serialize, Debug)]
+struct Page {
+    id: String,
+    name: String,
+    url: String,
+    time_zone: String,
+    updated_at: String,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+struct Component {
+    id: String,
+    name: String,
+    status: String,
+    created_at: String,
+    updated_at: String,
+    position: i32,
+    description: Option<String>,
+    showcase: bool,
+    start_date: String,
+    group_id: Option<String>,
+    page_id: String,
+    group: bool,
+    only_show_if_degraded: bool,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+struct Incident {
+    // Define fields based on the incident structure if present
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+struct Maintenance {
+    // Define fields based on the maintenance structure if present
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+struct Status {
+    indicator: String,
+    description: String,
 }
 
 fn main() {
