@@ -2,12 +2,15 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { ApiProvider } from "./context/apiContext.tsx";
+import { ToastProvider } from "./context/toastContext.tsx";
 
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-      <ApiProvider>
-          <App />
-      </ApiProvider>
-  </React.StrictMode>,
+    <React.StrictMode>
+        <ToastProvider>
+            <ApiProvider>
+                <App />
+            </ApiProvider>
+        </ToastProvider>
+    </React.StrictMode>
 );

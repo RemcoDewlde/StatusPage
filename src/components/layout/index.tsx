@@ -1,19 +1,14 @@
-import Navbar from "../navbar";
 import {Outlet} from "react-router-dom";
-import Toast from "../toast";
-
+import Sidebar from "../sidebar";
 
 const Layout = () => {
     return (
-        <>
-            <Navbar/>
-            <div>
-                <Toast message={"test"} type={"error"} id={0} closable={true} removeToast={function (): void {
-                    throw new Error("Function not implemented.");
-                }}  />
+        <div className="flex h-screen">
+            <Sidebar />
+            <div className="flex-1 p-4">
                 <Outlet />
             </div>
-        </>
+        </div>
     );
 }
 
