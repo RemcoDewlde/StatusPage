@@ -1,9 +1,6 @@
 import "./App.css";
 import Layout from "./components/layout";
-import {
-    createBrowserRouter,
-    RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home";
 import Settings from "./pages/Settings";
 import { useEffect } from "react";
@@ -22,12 +19,12 @@ const router = createBrowserRouter([
             {
                 path: "settings",
                 element: <Settings />
-            },
+            }
         ]
     }
 ]);
 
-const App = () =>{
+const App = () => {
 
     useEffect(() => {
         checkForUpdates();
@@ -35,8 +32,8 @@ const App = () =>{
 
 
     return (
-            <RouterProvider router={router} />
+        <RouterProvider router={router} />
     );
-}
+};
 
 export default App;

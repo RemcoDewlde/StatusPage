@@ -12,7 +12,7 @@ const Home = () => {
         const fetchData = async () => {
             try {
                 const data = await fetchStatusPageData(pageId, ApiAction.Summary);
-                console.log("Summary data:", data);
+                console.log(data);
             } catch (error) {
                 console.error("Error fetching summary:", error);
             }
@@ -22,13 +22,14 @@ const Home = () => {
     }, [fetchStatusPageData, pageId]);
 
     const handleClick = () => {
-        addToast('This is a success message', 'success', true);
+        addToast("This is a success message", "success", true);
     };
 
     return (
         <div>
             <h1>Home</h1>
             this is a home test
+            <br/>
             <button onClick={handleClick}>Show Toast</button>
 
         </div>

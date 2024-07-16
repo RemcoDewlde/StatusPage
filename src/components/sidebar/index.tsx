@@ -44,8 +44,7 @@ const Sidebar = () => {
         <aside
             className="flex flex-col w-64 h-screen px-5 py-8 overflow-y-auto bg-white border-r dark:bg-gray-900 dark:border-gray-700">
             <div className="flex flex-col items-center">
-                {/* TODO: Change the logo*/}
-                <img className="w-auto h-7 mb-4" src="https://merakiui.com/images/logo.svg" alt="Logo" />
+                {/*<img className="w-auto h-7 mb-4" src="https://merakiui.com/images/logo.svg" alt="Logo" />*/}
                 <div className="text-gray-600 dark:text-gray-300 text-lg font-semibold">{name}</div>
                 <div className="text-gray-500 dark:text-gray-400 text-sm hover:cursor-pointer" onClick={showVersion}>v{version}</div>
             </div>
