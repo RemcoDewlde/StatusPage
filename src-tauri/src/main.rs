@@ -16,6 +16,8 @@ enum CustomError {
     Reqwest(#[from] ReqwestError),
     #[error("Invalid action: {0}")]
     InvalidAction(String),
+    #[error("General error: {0}")]
+    General(String),
 }
 
 impl serde::Serialize for CustomError {
@@ -25,7 +27,9 @@ impl serde::Serialize for CustomError {
     {
         serializer.serialize_str(&self.to_string())
     }
+
 }
+
 
 #[derive(Debug)]
 enum ApiAction {
@@ -90,13 +94,13 @@ struct Page {
 struct Component {
     id: String,
     name: String,
-    status: String,
+    status: Option<String>,
     created_at: String,
     updated_at: String,
     position: i32,
     description: Option<String>,
     showcase: bool,
-    start_date: String,
+    start_date: Option<String>,
     group_id: Option<String>,
     page_id: String,
     group: bool,
@@ -116,7 +120,7 @@ struct Maintenance {
 #[derive(Deserialize, Serialize, Debug)]
 struct Status {
     indicator: String,
-    description: String,
+    description: Option<String>,
 }
 
 fn main() {

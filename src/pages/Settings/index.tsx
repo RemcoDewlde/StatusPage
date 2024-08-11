@@ -1,58 +1,105 @@
-import { useEffect, useState } from "react";
-import { loadSettings, saveToSettings } from "../../utils/storage.ts";
-import { useToast } from "../../context/toastContext.tsx";
+import React, { useEffect, useState } from 'react';
+import { useToast } from '../../context/toastContext.tsx';
+import { PageSetting, PageSettingType } from '../../utils/types.ts';
 
-const Settings = () => {
-    const [dashboardName, setDashboardName] = useState("");
-    const [settings, setSettings] = useState([{ name: "bla", url: "bla" }]);
+const Settings: React.FC = () => {
+    const [settings, setSettings] = useState<PageSetting[]>([]);
+    const [newPageId, setNewPageId] = useState('');
+    const [newName, setNewName] = useState('');
     const { addToast } = useToast();
 
     useEffect(() => {
         const fetchSettings = async () => {
-            try {
-                setDashboardName(dashboardName);
-                setSettings(settings);
-            } catch (error) {
-                console.error("Error fetching settings:", error);
+            const loadedSettings = await PageSettingType.load(addToast);
+            if (loadedSettings) {
+                setSettings(loadedSettings.settings);
             }
         };
 
         fetchSettings();
     }, []);
 
-    const save = async () => {
-        await saveToSettings("settings", settings, addToast);
+    const saveSettings = async (newSettings: PageSettingType) => {
+        await PageSettingType.save(newSettings, addToast);
     };
 
-    const load = async () => {
-        const settings = await loadSettings("settings", addToast);
-        console.log("retrieved settings from storage", settings);
-    }
+    const updateSetting = (pageId: string, name: string) => {
+        const updatedSettings = settings.map(setting =>
+            setting.pageId === pageId ? { ...setting, name } : setting
+        );
+        setSettings(updatedSettings);
+    };
+
+    const addSetting = async () => {
+        if (newPageId && newName) {
+            const newSettingsArray = [...settings, { pageId: newPageId, name: newName }];
+            const newSettings = new PageSettingType(newSettingsArray);
+            setSettings(newSettingsArray);
+            await saveSettings(newSettings);
+            setNewPageId('');
+            setNewName('');
+        }
+    };
+
+    const removeSetting = async (pageId: string) => {
+        const filteredSettings = settings.filter(setting => setting.pageId !== pageId);
+        const newSettings = new PageSettingType(filteredSettings);
+        setSettings(filteredSettings);
+        await saveSettings(newSettings);
+    };
 
     return (
         <div className="p-4">
-            <button onClick={save}>Save</button>
-            <br/>
-            <button onClick={load}>Load</button>
+            {settings.map(setting => (
+                <div key={setting.pageId} className="flex items-center space-x-4 mb-4">
+                    <input
+                        type="text"
+                        value={setting.pageId}
+                        readOnly
+                        className="border border-gray-300 rounded px-2 py-1"
+                    />
+                    <input
+                        type="text"
+                        value={setting.name}
+                        onChange={(e) => updateSetting(setting.pageId, e.target.value)}
+                        className="border border-gray-300 rounded px-2 py-1"
+                    />
+                    <button
+                        onClick={() => removeSetting(setting.pageId)}
+                        className="bg-red-500 text-white rounded px-4 py-2 hover:bg-red-600"
+                    >
+                        Remove
+                    </button>
+                </div>
+            ))}
+            <div className="flex items-center space-x-4 mb-4">
+                <input
+                    type="text"
+                    placeholder="Page ID"
+                    value={newPageId}
+                    onChange={(e) => setNewPageId(e.target.value)}
+                    className="border border-gray-300 rounded px-2 py-1"
+                />
+                <input
+                    type="text"
+                    placeholder="Name"
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    className="border border-gray-300 rounded px-2 py-1"
+                />
+                <button
+                    onClick={addSetting}
+                    className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600"
+                >
+                    Add Setting
+                </button>
+            </div>
+
+            <pre>
+                <code>{JSON.stringify(settings, null, 2)}</code>
+            </pre>
         </div>
     );
 };
 
 export default Settings;
-
-
-// import { invoke } from "@tauri-apps/api/tauri";
-// import { Command } from "../../enums/command.enum.ts";
-
-// const deleteSetting = (index: number) => {
-//     const newSettings = settings.filter((_, i) => i !== index);
-//     setSettings(newSettings);
-// };
-//
-// const saveSettings = async () => {
-//     try {
-//         await invoke(Command.SaveSettings, { dashboardName, settings });
-//     } catch (error) {
-//         console.error('Error saving settings:', error);
-//     }
-// };
