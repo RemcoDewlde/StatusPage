@@ -2,6 +2,7 @@ import { ApiAction, useApi } from "../../context/apiContext.tsx";
 import { useEffect, useState } from "react";
 import { useToast } from "../../context/toastContext.tsx";
 import { PageSetting, PageSettingType } from "../../utils/types.ts";
+import { Component } from "../../interfaces/component.interface.ts";
 
 
 const Home = () => {
@@ -67,25 +68,21 @@ const Home = () => {
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Updated At</th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PageID</th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Showcase</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GroupID</th>
                     </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                     {Object.values(statusData).map((pageData: any) =>
-                        pageData.components.map((component: any) => (
+                        pageData.components.map((component: Component) => (
                             <tr key={component.id}>
                                 <td className="px-6 py-4 whitespace-nowrap">{component.id}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{component.name}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{component.status}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{new Date(component.created_at).toLocaleString()}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{new Date(component.updated_at).toLocaleString()}</td>
+                                <td className="px-6 py-4 whitespace-nowrap">{component.page_id}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{component.position}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{component.showcase ? "Yes" : "No"}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{component.start_date ? new Date(component.start_date).toLocaleDateString() : "N/A"}</td>
+                                <td className="px-6 py-4 whitespace-nowrap">{component.group_id}</td>
                             </tr>
                         ))
                     )}

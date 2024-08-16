@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useToast } from '../../context/toastContext.tsx';
 import { PageSetting, PageSettingType } from '../../utils/types.ts';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+
 
 const Settings: React.FC = () => {
     const [settings, setSettings] = useState<PageSetting[]>([]);
@@ -95,9 +104,21 @@ const Settings: React.FC = () => {
                 </button>
             </div>
 
-            <pre>
-                <code>{JSON.stringify(settings, null, 2)}</code>
-            </pre>
+            <Dialog>
+                <DialogTrigger>Open</DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Are you absolutely sure?</DialogTitle>
+                        <DialogDescription>
+                            This action cannot be undone. This will permanently delete your account
+                            and remove your data from our servers.
+                        </DialogDescription>
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
+
+
+
         </div>
     );
 };

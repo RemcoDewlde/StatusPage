@@ -7,6 +7,10 @@
     "skipLibCheck": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+      "baseUrl": ".",
+      "paths": {
+        "@/*": ["./src/*"]
+      },
 
     /* Bundler mode */
     "moduleResolution": "bundler",
