@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
-import { Command } from "../../enums/command.enum";
+import { Command } from "@/enums/command.enum.ts";
 import { Link } from "react-router-dom";
 import routes from "../../providers/routeProvider";
-import { useToast } from "../../context/toastContext.tsx";
+import { ToastType, useToast } from "../../context/toastContext.tsx";
 
 const Sidebar = () => {
     const [name, setName] = useState("dev");
@@ -16,7 +16,7 @@ const Sidebar = () => {
                 let appName: string = await invoke(Command.GetApplicationName.toString());
                 setName(appName.toString());
             } catch (error) {
-                addToast("Error fetching name", "error", true);
+                addToast("Error fetching name", ToastType.Error, true);
             }
         };
         fetchName();
@@ -37,7 +37,7 @@ const Sidebar = () => {
 
     const showVersion = () => {
         // TODO: Add update check logic
-        addToast(` v${version} is the latest version`, "success", true);
+        addToast(` v${version} is the latest version`, ToastType.Success, true);
     }
 
     return (

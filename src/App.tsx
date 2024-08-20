@@ -1,5 +1,5 @@
 import "./App.css";
-import Layout from "./components/layout";
+import AppLayout from "./components/layout";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home";
 import Settings from "./pages/Settings";
@@ -10,7 +10,7 @@ import checkForUpdates from "./utils/updater.ts";
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <Layout />,
+        element: <AppLayout />,
         children: [
             {
                 index: true,

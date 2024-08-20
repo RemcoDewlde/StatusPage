@@ -1,9 +1,61 @@
 import { ApiAction, useApi } from "../../context/apiContext.tsx";
 import { useEffect, useState } from "react";
 import { useToast } from "../../context/toastContext.tsx";
-import { PageSetting, PageSettingType } from "../../utils/types.ts";
-import { Component } from "../../interfaces/component.interface.ts";
+import { PageSetting, PageSettingType } from "@/utils/types.ts";
+import {Layout, Model} from 'flexlayout-react';
+import 'flexlayout-react/style/light.css';
+import './index.css';
 
+
+
+let json = {
+    global: {
+        realtimeResize: true,
+        tabSetEnableSingleTabStretch: true,
+        tabSetMinWidth: 100,
+        tabSetMinHeight: 100
+    },
+    borders: [],
+    layout: {
+        type: "row",
+        weight: 100,
+        children: [
+            {
+                type: "tabset",
+                weight: 50,
+                children: [
+                    {
+                        type: "tab",
+                        name: "One",
+                        component: "button",
+                    }
+                ]
+            },
+            {
+                type: "tabset",
+                weight: 20,
+                children: [
+                    {
+                        type: "tab",
+                        name: "bla",
+                        component: "button",
+                    }
+                ]
+            },
+            {
+                type: "tabset",
+                weight: 50,
+                children: [
+                    {
+                        type: "tab",
+                        name: "Two",
+                        component: "button",
+                    }
+                ]
+            }
+        ]
+    }
+};
 
 const Home = () => {
     const { fetchStatusPageData } = useApi();
@@ -21,6 +73,7 @@ const Home = () => {
 
         fetchSettings();
     }, []);
+
 
     useEffect(() => {
         const fetchDataForSettings = async () => {
@@ -43,52 +96,20 @@ const Home = () => {
         }
     }, [settings]);
 
+    const factory = (node: any) => {
+        var component = node.getComponent();
+
+        if (component === "button") {
+            return <button>{node.getName()}</button>;
+        }
+    }
+    const model = Model.fromJson(json);
+
     return (
-        <div className="p-4">
-            {settings.map(setting => (
-                <div key={setting.pageId} className="flex items-center space-x-4 mb-4">
-                    <input
-                        type="text"
-                        value={setting.pageId}
-                        readOnly
-                        className="border border-gray-300 rounded px-2 py-1"
-                    />
-                    <input
-                        type="text"
-                        value={setting.name}
-                        readOnly
-                        className="border border-gray-300 rounded px-2 py-1"
-                    />
-                </div>
-            ))}
-            <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                    <tr>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PageID</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GroupID</th>
-                    </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                    {Object.values(statusData).map((pageData: any) =>
-                        pageData.components.map((component: Component) => (
-                            <tr key={component.id}>
-                                <td className="px-6 py-4 whitespace-nowrap">{component.id}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{component.name}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{component.status}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{component.page_id}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{component.position}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{component.group_id}</td>
-                            </tr>
-                        ))
-                    )}
-                    </tbody>
-                </table>
-            </div>
+        <div className="custom-layout-container">
+            <Layout
+                model={model}
+                factory={factory} />
         </div>
     );
 };

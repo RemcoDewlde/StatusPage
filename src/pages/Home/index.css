@@ -1,0 +1,10 @@
+.custom-layout-container .flexlayout__layout {
+    position: relative !important;
+    height: 100vh !important;
+    width: 100% !important;
+    left: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    overflow: auto !important;
+}

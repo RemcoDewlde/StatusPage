@@ -1,15 +1,15 @@
 import {Outlet} from "react-router-dom";
 import Sidebar from "../sidebar";
 
-const Layout = () => {
+const AppLayout = () => {
     return (
         <div className="flex h-screen">
             <Sidebar />
-            <div className="flex-1 p-4">
+            <div className="flex-1 h-screen">
                 <Outlet />
             </div>
         </div>
     );
 }
 
-export default Layout;
+export default AppLayout;
