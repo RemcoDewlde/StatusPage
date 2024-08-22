@@ -6,14 +6,18 @@ import {Layout, Model} from 'flexlayout-react';
 import 'flexlayout-react/style/light.css';
 import './index.css';
 
-
-
 let json = {
     global: {
         realtimeResize: true,
         tabSetEnableSingleTabStretch: true,
         tabSetMinWidth: 100,
-        tabSetMinHeight: 100
+        tabSetMinHeight: 100,
+        tabSetMarginInsets: {
+            top: 5,
+            right: 5,
+            bottom: 5,
+            left: 5
+        }
     },
     borders: [],
     layout: {
@@ -22,6 +26,8 @@ let json = {
         children: [
             {
                 type: "tabset",
+                enableDrop: true,
+                enableDrag: false,
                 weight: 50,
                 children: [
                     {
@@ -97,7 +103,7 @@ const Home = () => {
     }, [settings]);
 
     const factory = (node: any) => {
-        var component = node.getComponent();
+        let component = node.getComponent();
 
         if (component === "button") {
             return <button>{node.getName()}</button>;
