@@ -1,5 +1,4 @@
 use std::env;
-use std::error::Error;
 use reqwest::{Client};
 use crate::{ApiAction, ApiResponse, CustomError};
 

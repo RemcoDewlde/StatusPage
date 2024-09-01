@@ -2,71 +2,33 @@ import { ApiAction, useApi } from "../../context/apiContext.tsx";
 import { useEffect, useState } from "react";
 import { useToast } from "../../context/toastContext.tsx";
 import { PageSetting, PageSettingType } from "@/utils/types.ts";
-import {Layout, Model} from 'flexlayout-react';
-import 'flexlayout-react/style/light.css';
 import './index.css';
+import { Mosaic, MosaicNode, MosaicWindow } from "react-mosaic-component";
 
-let json = {
-    global: {
-        realtimeResize: true,
-        tabSetEnableSingleTabStretch: true,
-        tabSetMinWidth: 100,
-        tabSetMinHeight: 100,
-        tabSetMarginInsets: {
-            top: 5,
-            right: 5,
-            bottom: 5,
-            left: 5
-        }
+import 'react-mosaic-component/react-mosaic-component.css';
+import '@blueprintjs/core/lib/css/blueprint.css';
+import '@blueprintjs/icons/lib/css/blueprint-icons.css';
+
+// Use ViewId for both layout and mosaic component
+type ViewId = 'tile1' | 'tile2' | 'tile3';
+type LocalMosaicState = MosaicNode<ViewId> | null;
+
+const DEFAULT_LAYOUT: MosaicNode<ViewId> = {
+    direction: 'row',
+    first: 'tile1',
+    second: {
+        direction: 'column',
+        first: 'tile2',
+        second: 'tile3',
     },
-    borders: [],
-    layout: {
-        type: "row",
-        weight: 100,
-        children: [
-            {
-                type: "tabset",
-                enableDrop: true,
-                enableDrag: false,
-                weight: 50,
-                children: [
-                    {
-                        type: "tab",
-                        name: "One",
-                        component: "button",
-                    }
-                ]
-            },
-            {
-                type: "tabset",
-                weight: 20,
-                children: [
-                    {
-                        type: "tab",
-                        name: "bla",
-                        component: "button",
-                    }
-                ]
-            },
-            {
-                type: "tabset",
-                weight: 50,
-                children: [
-                    {
-                        type: "tab",
-                        name: "Two",
-                        component: "button",
-                    }
-                ]
-            }
-        ]
-    }
 };
 
 const Home = () => {
     const { fetchStatusPageData } = useApi();
     const [settings, setSettings] = useState<PageSetting[]>([]);
-    const [statusData, setStatusData] = useState<{ [key: string]: any }>({});
+    const [status, setStatusData] = useState<{ [key: string]: any }>({});
+    const [mosaicState, setMosaicState] = useState<LocalMosaicState>(DEFAULT_LAYOUT);
+
     const { addToast } = useToast();
 
     useEffect(() => {
@@ -80,20 +42,32 @@ const Home = () => {
         fetchSettings();
     }, []);
 
+    useEffect(() => {
+        const savedLayout = localStorage.getItem('mosaic-layout');
+        if (savedLayout) {
+            setMosaicState(JSON.parse(savedLayout) as LocalMosaicState);
+        } else {
+            setMosaicState(DEFAULT_LAYOUT);
+        }
+    }, []);
+
+    const TITLE_MAP: Record<ViewId, string> = {
+        tile1: 'Left Window',
+        tile2: 'Top Right Window',
+        tile3: 'Bottom Right Window',
+    };
 
     useEffect(() => {
         const fetchDataForSettings = async () => {
             const newStatusData: { [key: string]: any } = {};
             for (const setting of settings) {
                 try {
-                    console.log(`Fetching summary for ${setting.pageId}`);
                     const data = await fetchStatusPageData(setting.pageId, ApiAction.Summary);
                     newStatusData[setting.pageId] = data;
                 } catch (error) {
                     console.error(`Error fetching summary for ${setting.pageId}:`, error);
                 }
             }
-            console.log(newStatusData);
             setStatusData(newStatusData);
         };
 
@@ -102,20 +76,22 @@ const Home = () => {
         }
     }, [settings]);
 
-    const factory = (node: any) => {
-        let component = node.getComponent();
-
-        if (component === "button") {
-            return <button>{node.getName()}</button>;
-        }
-    }
-    const model = Model.fromJson(json);
+    const onChange = (newLayout: MosaicNode<ViewId> | null) => {
+        console.log('newLayout', newLayout);
+        setMosaicState(newLayout);
+    };
 
     return (
         <div className="custom-layout-container">
-            <Layout
-                model={model}
-                factory={factory} />
+            <Mosaic<ViewId>
+                renderTile={(id, path) => (
+                    <MosaicWindow<ViewId> path={path} createNode={() => 'tile1'} title={TITLE_MAP[id]}>
+                        <h1>{TITLE_MAP[id]}</h1>
+                    </MosaicWindow>
+                )}
+                value={mosaicState}
+                onChange={onChange}
+            />
         </div>
     );
 };

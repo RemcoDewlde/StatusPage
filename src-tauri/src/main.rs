@@ -16,8 +16,6 @@ enum CustomError {
     Reqwest(#[from] ReqwestError),
     #[error("Invalid action: {0}")]
     InvalidAction(String),
-    #[error("General error: {0}")]
-    General(String),
 }
 
 impl serde::Serialize for CustomError {
