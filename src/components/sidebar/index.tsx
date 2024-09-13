@@ -4,6 +4,9 @@ import { Command } from "@/enums/command.enum.ts";
 import { Link } from "react-router-dom";
 import routes from "../../providers/routeProvider";
 import { ToastType, useToast } from "../../context/toastContext.tsx";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { CogIcon } from "lucide-react";
 
 const Sidebar = () => {
     const [name, setName] = useState("dev");
@@ -31,37 +34,53 @@ const Sidebar = () => {
                 console.error("Error fetching version:", error);
             }
         };
-
         fetchVersion();
     }, []);
 
     const showVersion = () => {
-        // TODO: Add update check logic
-        addToast(` v${version} is the latest version`, ToastType.Success, true);
-    }
+        addToast(`v${version} is the latest version`, ToastType.Success, true);
+    };
 
     return (
-        <aside
-            className="flex flex-col w-64 h-screen px-5 py-8 overflow-y-auto bg-white border-r dark:bg-gray-900 dark:border-gray-700">
-            <div className="flex flex-col items-center">
-                <div className="text-gray-600 dark:text-gray-300 text-lg font-semibold">{name}</div>
-                <div className="text-gray-500 dark:text-gray-400 text-sm hover:cursor-pointer" onClick={showVersion}>v{version}</div>
+        <div className="flex flex-col h-screen w-16 bg-gray-800 text-white">
+            <div className="p-3 text-xl font-bold flex items-center justify-center">
+                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                    {name.charAt(0).toUpperCase()}
+                </div>
             </div>
-            <div className="flex flex-col justify-between flex-1 mt-6">
-                <nav className="-mx-3 space-y-3">
-                    {routes.map((route) => (
-                        <Link
-                            key={route.path}
-                            to={route.path}
-                            className="flex items-center px-3 py-2 text-gray-600 transition-colors duration-300 transform rounded-lg dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700"
-                        >
-                            <route.icon className="w-5 h-5" />
-                            <span className="mx-2 text-sm font-medium">{route.name}</span>
-                        </Link>
-                    ))}
+            <ScrollArea className="flex-grow">
+                <nav className="space-y-2 p-2">
+                    {routes
+                        .filter(route => route.name !== 'Settings')
+                        .map(route => (
+                            <Link key={route.path} to={route.path}>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="w-full hover:bg-gray-700 hover:text-white"
+                                >
+                                    <route.icon className="h-5 w-5" />
+                                    <span className="sr-only">{route.name}</span>
+                                </Button>
+                            </Link>
+                        ))}
                 </nav>
+            </ScrollArea>
+            <div className="p-2 space-y-2">
+                <Link to={'/settings'}>
+                    <Button variant="ghost" size="icon" className="w-full hover:bg-gray-700 hover:text-white">
+                        <CogIcon className="h-5 w-5" />
+                        <span className="sr-only">Settings</span>
+                    </Button>
+                </Link>
+                <div
+                    className="text-xs text-gray-400 text-center hover:text-white cursor-pointer"
+                    onClick={showVersion}
+                >
+                    v{version}
+                </div>
             </div>
-        </aside>
+        </div>
     );
 };
 
