@@ -1,17 +1,16 @@
 import "./App.css";
-import Layout from "./components/layout";
-import {
-    createBrowserRouter,
-    RouterProvider,
-} from "react-router-dom";
+import AppLayout from "./components/layout";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home";
 import Settings from "./pages/Settings";
+import { useEffect } from "react";
+import checkForUpdates from "./utils/updater.ts";
 
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <Layout />,
+        element: <AppLayout />,
         children: [
             {
                 index: true,
@@ -20,14 +19,21 @@ const router = createBrowserRouter([
             {
                 path: "settings",
                 element: <Settings />
-            },
+            }
         ]
     }
 ]);
-const App = () =>{
+
+const App = () => {
+
+    useEffect(() => {
+        checkForUpdates();
+    }, []);
+
+
     return (
-            <RouterProvider router={router} />
+        <RouterProvider router={router} />
     );
-}
+};
 
 export default App;
