@@ -1,11 +1,13 @@
-import { createContext, FC, useContext, useState, ReactNode, useCallback } from 'react';
+import { createContext, FC, ReactNode, useCallback, useContext, useState } from 'react';
 import Toast from '../components/toast';
 
 export enum ToastType {
-    Success = "success",
-    Error = "error",
-    Warning = "warning"
+    Success = 'success',
+    Error = 'error',
+    Warning = 'warning',
+    Info = 'info',
 }
+
 type ToastContextType = {
     addToast: (message: string, type: ToastType, closable?: boolean) => void;
 };
