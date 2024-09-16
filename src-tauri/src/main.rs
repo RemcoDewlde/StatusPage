@@ -123,9 +123,24 @@ struct Status {
 
 fn main() {
     let _ = fix_path_env::fix();
-    tauri::Builder::default()
+
+    let mut builder = tauri::Builder::default();
+
+    #[cfg(debug_assertions)]
+    {
+        let devtools = devtools::init();
+
+        builder = builder
+            .plugin(devtools)
+    }
+
+    builder
         .plugin(tauri_plugin_store::Builder::default().build())
-        .invoke_handler(tauri::generate_handler![get_version, get_application_name, fetch_statuspage_data])
+        .invoke_handler(tauri::generate_handler![
+            get_version,
+            get_application_name,
+            fetch_statuspage_data
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

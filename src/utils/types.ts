@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { BaseSettingType, RegisterType } from './BaseSettingType.ts';
-import type { MosaicNode as OriginalMosaicNode } from "react-mosaic-component";
+import type { MosaicNode as OriginalMosaicNode } from 'react-mosaic-component';
 
 export interface PageSetting {
     pageId: string;
@@ -25,7 +25,7 @@ export class PageSettingType extends BaseSettingType {
 
 export type ViewId = string;
 export type ApiType = string;
-export type ViewType = 'summary' | 'details' | 'graph'
+export type ViewType = string;
 
 export type TileSettings = {
     api: ApiType;
@@ -42,7 +42,7 @@ export class LayOutType extends BaseSettingType {
     constructor(
         layout: OriginalMosaicNode<any> = null,
         tileSettings: Record<string, TileSettings> = {},
-        titleMap: Record<string, string> = {}
+        titleMap: Record<string, string> = {},
     ) {
         super();
         this.layout = layout;

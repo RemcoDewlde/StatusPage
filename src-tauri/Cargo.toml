@@ -18,6 +18,8 @@ fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs" }
 thiserror = "1.0.24"
 reqwest = "0.11.4"
 tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
+devtools = "0.3.3"
+
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

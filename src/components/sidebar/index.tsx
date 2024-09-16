@@ -1,17 +1,36 @@
-import { useEffect, useState } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
-import { Command } from "@/enums/command.enum.ts";
-import { Link } from "react-router-dom";
-import routes from "../../providers/routeProvider";
-import { ToastType, useToast } from "../../context/toastContext.tsx";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { CogIcon } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { invoke } from '@tauri-apps/api/tauri';
+import { Command } from '@/enums/command.enum.ts';
+import { Link } from 'react-router-dom';
+import { ToastType, useToast } from '../../context/toastContext.tsx';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { CogIcon, LayoutGrid, PanelsTopLeft } from 'lucide-react';
+import Home from '@/pages/Home';
+import Settings from '@/pages/Settings';
+import { useFormDialog } from '@/context/FormDialogContext.tsx';
 
 const Sidebar = () => {
-    const [name, setName] = useState("dev");
-    const [version, setVersion] = useState("dev");
+    const [name, setName] = useState('dev');
+    const [version, setVersion] = useState('dev');
     const { addToast } = useToast();
+    const { openDialog } = useFormDialog();
+
+    const handleAddTile = () => {
+        openDialog();
+    };
+
+    const routes = [
+        { component: Home, path: '/', name: ('Dashboard'), icon: PanelsTopLeft },
+        { component: Settings, path: '/settings', name: ('Settings'), icon: CogIcon },
+        {
+            name: 'Add Status Tile',
+            icon: LayoutGrid,
+            onClick: () => {
+                handleAddTile();
+            },
+        },
+    ];
 
     useEffect(() => {
         const fetchName = async () => {
@@ -19,7 +38,7 @@ const Sidebar = () => {
                 let appName: string = await invoke(Command.GetApplicationName.toString());
                 setName(appName.toString());
             } catch (error) {
-                addToast("Error fetching name", ToastType.Error, true);
+                addToast('Error fetching name', ToastType.Error, true);
             }
         };
         fetchName();
@@ -31,7 +50,7 @@ const Sidebar = () => {
                 let appVersion: string = await invoke(Command.GetApplicationVersion.toString());
                 setVersion(appVersion.toString());
             } catch (error) {
-                console.error("Error fetching version:", error);
+                console.error('Error fetching version:', error);
             }
         };
         fetchVersion();
@@ -51,19 +70,28 @@ const Sidebar = () => {
             <ScrollArea className="flex-grow">
                 <nav className="space-y-2 p-2">
                     {routes
-                        .filter(route => route.name !== 'Settings')
-                        .map(route => (
-                            <Link key={route.path} to={route.path}>
+                        .filter((route) => route.name !== 'Settings')
+                        .map((route) => {
+                            const content = (
                                 <Button
                                     variant="ghost"
                                     size="icon"
                                     className="w-full hover:bg-gray-700 hover:text-white"
+                                    onClick={route.onClick}
                                 >
                                     <route.icon className="h-5 w-5" />
                                     <span className="sr-only">{route.name}</span>
                                 </Button>
-                            </Link>
-                        ))}
+                            );
+
+                            return route.path ? (
+                                <Link key={route.path} to={route.path}>
+                                    {content}
+                                </Link>
+                            ) : (
+                                <div key={route.name}>{content}</div>
+                            );
+                        })}
                 </nav>
             </ScrollArea>
             <div className="p-2 space-y-2">
