@@ -2,3 +2,8 @@
 
 # Status Page App
 keep track of all the statuspage.io status pages you are interested in
+
+## TODO before V1
+- Add logging to the app
+- Check the given pageid is valid on the settings page
+- Support multiple types of dashboard screens

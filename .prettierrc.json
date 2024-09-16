@@ -2,7 +2,10 @@
   "tabWidth": 4,
   "printWidth": 160,
   "arrowParens": "avoid",
-  "trailingComma": "none",
+  "trailingComma": "es5",
+  "singleQuote": true,
+  "jsxBracketSameLine": true,
+  "bracketSpacing": true,
   "plugins": ["prettier-plugin-tailwindcss"],
   "tailwindConfig": "./styles/tailwind.config.js"
 }

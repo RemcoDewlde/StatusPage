@@ -1,136 +1,140 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { PageSetting, PageSettingType } from '@/utils/types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Github, Plus, Trash2 } from 'lucide-react';
+import { ToastType, useToast } from '@/context/toastContext.tsx';
+import { Input } from '@/components/ui/input';
 import { invoke } from '@tauri-apps/api/tauri';
-import { Menu } from '@headlessui/react';
-import { Command } from "../../utils/command.enum.ts";
+import { Command } from '@/enums/command.enum.ts';
 
-const Settings = () => {
-    const [dashboardName, setDashboardName] = useState('');
-    const [settings, setSettings] = useState([{ name: '', url: '' }]);
+export default function Settings() {
+    const [settings, setSettings] = useState<PageSetting[]>([]);
+    const [newPageId, setNewPageId] = useState('');
+    const [newName, setNewName] = useState('');
+    const [version, setVersion] = useState('dev');
+    const { addToast } = useToast();
 
     useEffect(() => {
         const fetchSettings = async () => {
-            try {
-                // const response = await invoke(Command.GetSettings);
-                // const { dashboardName, settings } = response;
-                setDashboardName(dashboardName);
-                setSettings(settings);
-            } catch (error) {
-                console.error("Error fetching settings:", error);
+            const loadedSettings = await PageSettingType.load((message: string) =>
+                addToast(message, ToastType.Info, true),
+            );
+            if (loadedSettings) {
+                setSettings(loadedSettings.settings);
             }
         };
 
         fetchSettings();
+    }, [addToast]);
+
+    useEffect(() => {
+        const fetchVersion = async () => {
+            try {
+                let appVersion: string = await invoke(Command.GetApplicationVersion.toString());
+                setVersion(appVersion.toString());
+            } catch (error) {
+            }
+        };
+        fetchVersion();
     }, []);
 
-    // const handleDashboardNameChange = (e) => {
-    //     setDashboardName(e.target.value);
-    // };
-
-    // const handleSettingChange = (index: number, field: any, value: string) => {
-    //     const newSettings = [...settings];
-    //     // newSettings[index][field] = value;
-    //     setSettings(newSettings);
-    // };
-
-    const addSetting = () => {
-        setSettings([...settings, { name: '', url: '' }]);
+    const saveSettings = async (newSettings: PageSettingType) => {
+        await PageSettingType.save(newSettings, (message: string) =>
+            addToast(message, ToastType.Info, true),
+        );
     };
 
-    // const deleteSetting = (index: number) => {
-    //     const newSettings = settings.filter((_, i) => i !== index);
-    //     setSettings(newSettings);
-    // };
+    const updateSetting = (pageId: string, name: string) => {
+        const updatedSettings = settings.map((setting) =>
+            setting.pageId === pageId ? { ...setting, name } : setting,
+        );
+        setSettings(updatedSettings);
+    };
 
-    const saveSettings = async () => {
-        try {
-            await invoke(Command.SaveSettings, { dashboardName, settings });
-        } catch (error) {
-            console.error("Error saving settings:", error);
+    const addSetting = async () => {
+        if (newPageId && newName) {
+            const newSettingsArray = [...settings, { pageId: newPageId, name: newName }];
+            const newSettings = new PageSettingType(newSettingsArray);
+            setSettings(newSettingsArray);
+            await saveSettings(newSettings);
+            setNewPageId('');
+            setNewName('');
         }
     };
 
+    const removeSetting = async (pageId: string) => {
+        const filteredSettings = settings.filter((setting) => setting.pageId !== pageId);
+        const newSettings = new PageSettingType(filteredSettings);
+        setSettings(filteredSettings);
+        await saveSettings(newSettings);
+    };
+
     return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4">Settings</h1>
-            <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Dashboard Name</label>
-                <input
-                    type="text"
-                    value={dashboardName}
-                    // onChange={handleDashboardNameChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-            </div>
-            <div className="mb-4">
-                <table className="min-w-full bg-white">
-                    <thead>
-                    <tr>
-                        <th className="py-2">Name</th>
-                        <th className="py-2">URL</th>
-                        <th className="py-2">Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {settings.map((setting, index) => (
-                        <tr key={index} className="border-t">
-                            <td className="py-2 px-4">
-                                <input
-                                    type="text"
-                                    value={setting.name}
-                                    // onChange={(e) => handleSettingChange(index, 'name', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                />
-                            </td>
-                            <td className="py-2 px-4">
-                                <input
-                                    type="text"
-                                    value={setting.url}
-                                    // onChange={(e) => handleSettingChange(index, 'url', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                />
-                            </td>
-                            <td className="py-2 px-4 text-right">
-                                <Menu as="div" className="relative inline-block text-left">
-                                    <div>
-                                        <Menu.Button className="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
-                                            Actions
-                                        </Menu.Button>
-                                    </div>
-                                    <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
-                                        <div className="px-1 py-1">
-                                            {/*<Menu.Item>*/}
-                                            {/*    {({ active }) => (*/}
-                                            {/*        <button*/}
-                                            {/*            onClick={() => deleteSetting(index)}*/}
-                                            {/*            className={`${active ? 'bg-red-500 text-white' : 'text-gray-900'} group flex rounded-md items-center w-full px-2 py-2 text-sm`}*/}
-                                            {/*        >*/}
-                                            {/*            Delete*/}
-                                            {/*        </button>*/}
-                                            {/*    )}*/}
-                                            {/*</Menu.Item>*/}
-                                        </div>
-                                    </Menu.Items>
-                                </Menu>
-                            </td>
-                        </tr>
+        <div>
+            <Card className="w-full max-w-4xl mx-auto my-4">
+                <CardHeader>
+                    <CardTitle>Saved StatusPages</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    {settings.map((setting) => (
+                        <div key={setting.pageId} className="flex items-center space-x-4 mb-4">
+                            <Input
+                                type="text"
+                                value={setting.pageId}
+                                readOnly
+                                className="w-1/3"
+                            />
+                            <Input
+                                type="text"
+                                value={setting.name}
+                                onChange={(e) => updateSetting(setting.pageId, e.target.value)}
+                                className="w-1/3"
+                            />
+                            <Button
+                                variant="destructive"
+                                size="icon"
+                                onClick={() => removeSetting(setting.pageId)}
+                            >
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </div>
                     ))}
-                    </tbody>
-                </table>
-            </div>
-            <button
-                onClick={addSetting}
-                className="mb-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-                Add Setting
-            </button>
-            <button
-                onClick={saveSettings}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-            >
-                Save Settings
-            </button>
+                    <div className="flex items-center space-x-4 mt-6">
+                        <Input
+                            type="text"
+                            placeholder="Page ID"
+                            value={newPageId}
+                            onChange={(e) => setNewPageId(e.target.value)}
+                            className="w-1/3"
+                        />
+                        <Input
+                            type="text"
+                            placeholder="Name"
+                            value={newName}
+                            onChange={(e) => setNewName(e.target.value)}
+                            className="w-1/3"
+                        />
+                        <Button onClick={addSetting}>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Setting
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+            <Card className="max-w-4xl mx-auto bottom-2">
+                <CardContent className="flex flex-col items-center justify-center text-sm text-muted-foreground py-4">
+                    <div className="flex items-center">
+                        <a href="https://github.com/RemcoDewlde/StatusPage " target="_blank" rel="noreferrer"
+                           className="flex items-center hover:text-primary">
+                            <Github className="h-4 w-4 mr-1" />
+                            View on GitHub
+                        </a>
+                        <span className="mx-2">|</span>
+                        <span>Version {version}</span>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
-};
-
-export default Settings;
+}

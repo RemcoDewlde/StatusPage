@@ -6,12 +6,12 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "statuspageio-app",
-    "version": "0.0.7"
+    "productName": "statuspage collector",
+    "version": "0.0.9"
   },
   "tauri": {
     "allowlist": {
-      "all": false,
+      "all": true,
       "shell": {
         "all": false,
         "open": true
@@ -20,7 +20,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://gist.githubusercontent.com/RemcoDewlde/2b878b3e42effa57334b9fa777626225/raw/3475a0d7e716c8e516aeeda557d50d00d76799b0/Latest%2520JSON%2520Update"
+        "https://gist.githubusercontent.com/RemcoDewlde/2b878b3e42effa57334b9fa777626225/raw/41202d6c87846556855a2d8e82c0389f3fb12d16/Latest%2520JSON%2520Update"
       ],
       "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQxMkIzMzY4NENEMUQyMjUKUldRbDB0Rk1hRE1yMFNKcjBxdlVWNFZRc2lBOGRhaFNtQnhXN1llOE85UzJ4SDU2c3l4TVZQU1MK",
@@ -30,9 +30,12 @@
     },
     "windows": [
       {
-        "title": "statuspageio-app",
+        "title": "statuspage collector",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "minWidth": 800,
+        "minHeight": 600,
+        "fileDropEnabled": false
       }
     ],
     "security": {
