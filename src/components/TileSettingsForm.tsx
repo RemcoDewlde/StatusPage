@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useMosaic } from '@/context/MosaicContext';
 import { ViewId } from '@/utils/types';
 import { Button } from '@/components/ui/button.tsx';
+import { Input } from '@/components/ui/input.tsx';
 
 interface TileFormProps {
     onClose: () => void;
@@ -36,7 +37,7 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
         <form onSubmit={handleSubmit}>
             <div>
                 <label>View Type</label>
-                <input
+                <Input
                     type="text"
                     value={formData.viewType}
                     onChange={(e) => setFormData({ ...formData, viewType: e.target.value })}
@@ -44,7 +45,7 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
             </div>
             <div>
                 <label>API</label>
-                <input
+                <Input
                     type="text"
                     value={formData.api}
                     onChange={(e) => setFormData({ ...formData, api: e.target.value })}
