@@ -29,7 +29,7 @@ export const FormDialogProvider = ({ children }: { children: ReactNode }) => {
         <FormDialogContext.Provider value={{ openDialog, closeDialog }}>
             {children}
             <Dialog open={isOpen} onOpenChange={(open) => !open && closeDialog()}>
-                <DialogContent>
+                <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>{editingTileId ? 'Edit Tile' : 'Add New Tile'}</DialogTitle>
                         <DialogDescription>
