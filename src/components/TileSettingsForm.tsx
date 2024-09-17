@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useMosaic } from '@/context/MosaicContext';
-import { ViewId } from '@/utils/types';
+import { PageSettingType, ViewId } from '@/utils/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CardContent, CardFooter } from '@/components/ui/card';
@@ -12,9 +12,8 @@ interface TileFormProps {
 }
 
 const fetchApiOptions = async () => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return ['API 1', 'API 2', 'API 3', 'API 4'];
+    const loadedSettings = await PageSettingType.load();
+    return loadedSettings ? loadedSettings.settings : [];
 };
 
 const viewTypes = ['details', 'graph', 'summary'];
@@ -33,7 +32,7 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
         additionalSettings: initialSettings.additionalSettings || {},
     });
 
-    const [apiOptions, setApiOptions] = useState<string[]>([]);
+    const [apiOptions, setApiOptions] = useState<{ pageId: string; name: string }[]>([]);
 
     useEffect(() => {
         fetchApiOptions().then(setApiOptions);
@@ -94,24 +93,6 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
                         </Select>
                     </div>
                 );
-            case 'summary':
-                return (
-                    <div className="space-y-4">
-                        <label className="block text-sm font-medium text-gray-700">Map Center Coordinates</label>
-                        <Input
-                            type="text"
-                            value={formData.additionalSettings.mapCenter || ''}
-                            onChange={(e) => setFormData({
-                                ...formData,
-                                additionalSettings: {
-                                    ...formData.additionalSettings,
-                                    mapCenter: e.target.value,
-                                },
-                            })}
-                            placeholder="Enter latitude,longitude"
-                        />
-                    </div>
-                );
             default:
                 return null;
         }
@@ -131,8 +112,8 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
                         </SelectTrigger>
                         <SelectContent>
                             {apiOptions.map((api) => (
-                                <SelectItem key={api} value={api}>
-                                    {api}
+                                <SelectItem key={api.pageId} value={api.pageId}>
+                                    {api.name}
                                 </SelectItem>
                             ))}
                         </SelectContent>
@@ -150,7 +131,7 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
                         <SelectContent>
                             {viewTypes.map((type) => (
                                 <SelectItem key={type} value={type}>
-                                    {type}
+                                    {type.charAt(0).toUpperCase() + type.slice(1)}
                                 </SelectItem>
                             ))}
                         </SelectContent>
@@ -159,7 +140,7 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
                 {renderAdditionalFields()}
             </CardContent>
             <CardFooter className="flex justify-end space-x-2">
-                <Button variant="ghost" onClick={onClose}>
+                <Button type="button" variant="ghost" onClick={onClose}>
                     Cancel
                 </Button>
                 <Button type="submit">{tileId ? 'Update' : 'Add'}</Button>

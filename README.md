@@ -17,7 +17,7 @@ users.
 - 📊 Real-time status updates - TODO
 - 🎨 Customizable layout
 - 🔧 Easy configuration and setup
-- 📱 Fully responsive design
+- 📱 Fully responsive designs
 - 🚀 Built with modern technologies
 - 🔒 Secure and scalable
 - 🖥️ Cross-platform desktop application (Windows, macOS, Linux)

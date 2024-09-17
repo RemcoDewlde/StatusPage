@@ -11,7 +11,6 @@ const Home = () => {
     const { layout, tiles, titles, removeTile, setLayout } = useMosaic();
     const { openDialog } = useFormDialog();
 
-
     const handleEditTileClick = (id: ViewId) => {
         openDialog(id);
     };
