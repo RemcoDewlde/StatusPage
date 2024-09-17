@@ -25,6 +25,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "framer-motion": "^11.2.10",
+    "get-nonce": "^1.0.1",
     "install": "^0.13.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.428.0",
