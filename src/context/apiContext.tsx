@@ -5,7 +5,7 @@ import { StatusPageData } from '../interfaces/statusPageData.interface.ts';
 
 interface ApiContextType {
     fetchStatusPageData: (pageId: string, action: ApiAction) => Promise<StatusPageData>;
-    parseStringAndGetData: (inputString: string) => Partial<StatusPageData> | null;
+    parseStringAndGetData: (inputString: string) => StatusPageData | null;
     statusPageData: StatusPageData | null;
 }
 
@@ -30,7 +30,7 @@ const ApiProvider: FunctionComponent<{ children: ReactNode }> = ({ children }) =
     }, []);
 
     // TODO: rename this function to something more meaningful
-    const parseStringAndGetData = useCallback((inputString: string): Partial<StatusPageData> | null => {
+    const parseStringAndGetData = useCallback((inputString: string): StatusPageData | null => {
         if (!statusPageData) {
             return null;
         }
