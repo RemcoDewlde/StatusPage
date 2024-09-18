@@ -7,14 +7,49 @@ import ContentComponentFactory from '@/utils/ContentComponentFactory.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { useFormDialog } from '@/context/FormDialogContext.tsx';
 
+import './custom-mosaic-styles.css';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu.tsx';
+
+
 const Home = () => {
     const { layout, tiles, titles, removeTile, setLayout } = useMosaic();
     const { openDialog } = useFormDialog();
-
+    // const context = useContext(MosaicWindowContext);
+    // const [toggleAdditionalControls, setToggleAdditionalControls] = useState(false);
 
     const handleEditTileClick = (id: ViewId) => {
         openDialog(id);
     };
+
+    // const handleTogle = () => {
+    //     setToggleAdditionalControls(!toggleAdditionalControls);
+    // };
+
+    const additionalControls = (
+        <div className="p-4 space-y-4">
+            <p className="text-gray-700">Additional Settings:</p>
+            <Button onClick={() => alert('Action 1')}>Action 1</Button>
+            <Button onClick={() => alert('Action 2')}>Action 2</Button>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="outline">More Options</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuItem onSelect={() => alert('Option 1')}>Option 1</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => alert('Option 2')}>Option 2</DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+            {/*<Button variant="destructive" onClick={toggleAdditionalControls}>*/}
+            {/*    /!*TODO: fix this*!/*/}
+            {/*    Close*/}
+            {/*</Button>*/}
+        </div>
+    );
 
     return (
         <div className="custom-layout-container min-h-screen w-full bg-gray-100 dark:bg-gray-900">
@@ -26,7 +61,18 @@ const Home = () => {
                     const settings = tiles[id];
                     const title = titles[id];
                     return (
-                        <MosaicWindow<ViewId> path={path} title={title || 'Untitled'}>
+                        <MosaicWindow<ViewId>
+                            path={path}
+                            title={title || 'Untitled'}
+                            toolbarControls={
+                                <div className="mosaic-window-controls flex items-center space-x-2">
+                                    {/*<Button size="sm" onClick={handleTogle()}>*/}
+                                    {/*    Options*/}
+                                    {/*</Button>*/}
+                                </div>
+                            }
+                            additionalControls={additionalControls}
+                        >
                             <div className="p-4 flex flex-col h-full">
                                 <div className="flex-1">
                                     <ContentComponentFactory viewType={settings.viewType} api={settings.api} />
