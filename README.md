@@ -34,6 +34,10 @@ users.
 - Platform-specific dependencies for Tauri (
   see [Tauri setup guide](https://tauri.app/v1/guides/getting-started/prerequisites))
 
+## Known issue's
+- MacOS installer / build results in `statuspage collector” is damaged and can’t be opened.`
+
+
 ## 📋 Todo
 
 - [ ] Add real-time status updates
