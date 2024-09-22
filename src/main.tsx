@@ -5,11 +5,12 @@ import { ApiProvider } from './context/apiContext.tsx';
 import { ToastProvider } from './context/toastContext.tsx';
 import { MosaicProvider } from '@/context/MosaicContext.tsx';
 import { FormDialogProvider } from '@/context/FormDialogContext.tsx';
-
+import { RefreshProvider } from "@/context/RefreshContext.tsx";
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
         <ToastProvider>
+            <RefreshProvider>
             <MosaicProvider>
                 <ApiProvider>
                     <FormDialogProvider>
@@ -17,6 +18,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                     </FormDialogProvider>
                 </ApiProvider>
             </MosaicProvider>
+            </RefreshProvider>
         </ToastProvider>
     </React.StrictMode>,
 );

@@ -1,11 +1,9 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
-import { ViewId } from '@/utils/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import TileForm from '@/components/TileSettingsForm.tsx';
 
-
 interface FormDialogContextProps {
-    openDialog: (tileId?: ViewId) => void;
+    openDialog: (tileId?: string) => void;
     closeDialog: () => void;
 }
 
@@ -13,10 +11,10 @@ const FormDialogContext = createContext<FormDialogContextProps | undefined>(unde
 
 export const FormDialogProvider = ({ children }: { children: ReactNode }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [editingTileId, setEditingTileId] = useState<ViewId | null>(null);
+    const [editingTileId, setEditingTileId] = useState<string | null>(null);
 
-    const openDialog = (tileId?: ViewId) => {
-        setEditingTileId(tileId || null);
+    const openDialog = (tileId?: string) => {
+        setEditingTileId(tileId ?? null);
         setIsOpen(true);
     };
 

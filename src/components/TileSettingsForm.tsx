@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useMosaic } from '@/context/MosaicContext';
-import { PageSettingType, ViewId } from '@/utils/types';
+import { PageSettingType } from '@/utils/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CardContent, CardFooter } from '@/components/ui/card';
@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 interface TileFormProps {
     onClose: () => void;
-    tileId?: ViewId;
+    tileId?: string;
 }
 
 const fetchApiOptions = async () => {

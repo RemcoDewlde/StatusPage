@@ -1,6 +1,5 @@
 import { Mosaic, MosaicWindow } from 'react-mosaic-component';
 import 'react-mosaic-component/react-mosaic-component.css';
-import { ViewId } from '@/utils/types';
 import ZeroState from '@/components/mozaic/ZeroState.tsx';
 import { useMosaic } from '@/context/MosaicContext.tsx';
 import ContentComponentFactory from '@/utils/ContentComponentFactory.tsx';
@@ -22,7 +21,7 @@ const Home = () => {
     // const context = useContext(MosaicWindowContext);
     // const [toggleAdditionalControls, setToggleAdditionalControls] = useState(false);
 
-    const handleEditTileClick = (id: ViewId) => {
+    const handleEditTileClick = (id: string) => {
         openDialog(id);
     };
 
@@ -52,16 +51,16 @@ const Home = () => {
     );
 
     return (
-        <div className="custom-layout-container min-h-screen w-full bg-gray-100 dark:bg-gray-900">
-            <Mosaic<ViewId>
-                className="min-h-screen bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 shadow-inner rounded-lg"
+        <div className="custom-layout-container min-h-screen w-full bg-gray-100 dark:bg-gray-900 rounded-lg">
+            <Mosaic<string>
+                className="min-h-screen bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 shadow-inner rounded-lg border-none"
                 value={layout}
                 onChange={(newLayout) => setLayout(newLayout)}
                 renderTile={(id, path) => {
                     const settings = tiles[id];
                     const title = titles[id];
                     return (
-                        <MosaicWindow<ViewId>
+                        <MosaicWindow<string>
                             path={path}
                             title={title || 'Untitled'}
                             toolbarControls={

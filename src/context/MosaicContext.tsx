@@ -2,7 +2,7 @@ import { MosaicNode } from 'react-mosaic-component';
 import { LayOutType, TileSettings, ViewId } from '@/utils/types';
 import { createContext, FC, ReactNode, useContext, useEffect, useReducer, useRef, useState } from 'react';
 import { v4 as uuid } from 'uuid';
-import initialState from '@/Defaults/DefaultMosaicState.ts';
+import initialState from '@/defaults/DefaultMosaicState.ts';
 
 export interface MosaicContextProps {
     layout: MosaicNode<ViewId> | null;

@@ -3,11 +3,17 @@ import { useEffect, useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 import { ApiAction, useApi } from '@/context/apiContext.tsx';
 import { StatusPageData } from '@/interfaces/statusPageData.interface.ts';
+import { useRefresh } from "@/context/RefreshContext.tsx";
 
 export const SummaryView = (props: { api: string }) => {
     const [data, setData] = useState<StatusPageData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const { fetchStatusPageData } = useApi();
+    const { refreshSignal } = useRefresh();
+
+    useEffect(() => {
+        console.log('Refresh signal:', refreshSignal)
+    }, [refreshSignal]);
 
     useEffect(() => {
         let pollingTimeout: NodeJS.Timeout;
@@ -38,7 +44,7 @@ export const SummaryView = (props: { api: string }) => {
                 clearTimeout(pollingTimeout);
             }
         };
-    }, [props.api, fetchStatusPageData]);
+    }, [props.api, fetchStatusPageData, refreshSignal]);
 
     const StatusIcon = ({ status }: { status: string }) => {
         switch (status) {
