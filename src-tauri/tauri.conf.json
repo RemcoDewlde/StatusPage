@@ -25,7 +25,7 @@
       "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRbDB0Rk1hRE1yMFg5VWN0elJlREgvTTZ2ZitKVmZiODdEMkRqc3I1bW0vaGtXYkppdlljV2FQcnZWN1NLaTBwWHpOMFNvQi9EdkhVeFdJcWxwNVFsWU13R0Y3RE9XdkEwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE4MzczNDg4CWZpbGU6c3RhdHVzcGFnZWlvLWFwcC5hcHAudGFyLmd6CjIyNHJRb0wxME5WY1lYeVN6Ni9xSW44QncrT29MNU5vZE5yMWtOZjFFSWI0Vm9VUWMyWExnV0t5cWtHbnhoNmVPN0IwNE05QWlaait6c1F3K3BFMUNBPT0K",
       "windows": {
-        "installMode": "passive"
+        "installMode": "basicUi"
       }
     },
     "windows": [

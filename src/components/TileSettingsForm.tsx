@@ -16,7 +16,7 @@ const fetchApiOptions = async () => {
     return loadedSettings ? loadedSettings.settings : [];
 };
 
-const viewTypes = ['details', 'graph', 'summary'];
+const viewTypes = ['details', 'graph', 'summary', 'dev'];
 
 const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
     const { tiles, addTile, updateTile } = useMosaic();

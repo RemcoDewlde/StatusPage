@@ -1,4 +1,4 @@
-# StatusPage 🚦
+# 🚦StatusPage
 
 [![release for main](https://github.com/RemcoDewlde/StatusPage/actions/workflows/publish_and_release.yml/badge.svg)](https://github.com/RemcoDewlde/StatusPage/actions/workflows/publish_and_release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT)
@@ -16,7 +16,7 @@ users.
 
 ## 🌟 Features
 
-- 📊 Real-time status updates - TODO
+- 📊 Real-time status updates
 - 🎨 Customizable layout
 - 🔧 Easy configuration and setup
 - 📱 Fully responsive designs
@@ -26,7 +26,7 @@ users.
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### ↩️ Prerequisites
 
 - Node.js (v14 or later)
 - npm or yarn
@@ -36,7 +36,8 @@ users.
 
 ## 📋 Todo
 
-- [ ] Add real-time status updates
-- [ ] Add a screenshot of the application
 - [ ] Add several new tiles to show Data on the dashboard
 - [ ] Update the styling of the Mosaic tiles / layout
+- [ ] Add styles screenshots of the application to the readme
+- [ ] Fix the bundle/build for MacOS
+- 
