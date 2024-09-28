@@ -7,13 +7,14 @@ import { DevView } from '@/components/mozaic/Windows/DevView.tsx';
 interface FactoryProps {
     viewType: string;
     api: string;
+    additionalSettings?: Record<string, any>;
 }
 
-const ContentComponentFactory: FC<FactoryProps> = ({ viewType, api }) => {
+const ContentComponentFactory: FC<FactoryProps> = ({ viewType, api, additionalSettings }) => {
     const componentsMap: Record<string, ReactNode> = {
         summary: <SummaryView api={api} />,
         details: <DetailsView api={api} />,
-        graph: <GraphView api={api} />,
+        graph: <GraphView api={api} additionalSettings={additionalSettings} />,
         dev: <DevView api={api} />,
     };
 

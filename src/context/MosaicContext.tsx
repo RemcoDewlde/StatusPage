@@ -1,26 +1,26 @@
 import { MosaicNode } from 'react-mosaic-component';
-import { LayOutType, TileSettings, ViewId } from '@/utils/types';
+import { LayOutType, TileSettings } from '@/utils/types';
 import { createContext, FC, ReactNode, useContext, useEffect, useReducer, useRef, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import initialState from '@/defaults/DefaultMosaicState.ts';
 
 export interface MosaicContextProps {
-    layout: MosaicNode<ViewId> | null;
-    tiles: Record<ViewId, TileSettings>;
-    titles: Record<ViewId, string>;
+    layout: MosaicNode<string> | null;
+    tiles: Record<string, TileSettings>;
+    titles: Record<string, string>;
     addTile: (settings: TileSettings, title?: string) => void;
-    updateTile: (id: ViewId, settings: TileSettings) => void;
-    removeTile: (id: ViewId) => void;
-    setLayout: (layout: MosaicNode<ViewId> | null) => void;
+    updateTile: (id: string, settings: TileSettings) => void;
+    removeTile: (id: string) => void;
+    setLayout: (layout: MosaicNode<string> | null) => void;
 }
 
 type Action =
     | { type: 'ADD_TILE'; payload: { settings: TileSettings; title?: string } }
-    | { type: 'UPDATE_TILE'; payload: { id: ViewId; settings: TileSettings } }
-    | { type: 'REMOVE_TILE'; payload: { id: ViewId } }
+    | { type: 'UPDATE_TILE'; payload: { id: string; settings: TileSettings } }
+    | { type: 'REMOVE_TILE'; payload: { id: string } }
     | {
     type: 'SET_LAYOUT'; payload: {
-        layout: MosaicNode<ViewId> | null;
+        layout: MosaicNode<string> | null;
         tiles?: MosaicContextProps['tiles'];
         titles?: MosaicContextProps['titles'];
     };
@@ -28,9 +28,9 @@ type Action =
     | {
     type: 'SET_STATE';
     payload: {
-        layout: MosaicNode<ViewId> | null;
-        tiles: Record<ViewId, TileSettings>;
-        titles: Record<ViewId, string>;
+        layout: MosaicNode<string> | null;
+        tiles: Record<string, TileSettings>;
+        titles: Record<string, string>;
     };
 };
 
@@ -42,10 +42,11 @@ const mosaicReducer = (
 ): typeof initialState => {
     switch (action.type) {
         case 'ADD_TILE': {
+            console.log('ADD_TILE', action.payload);
             const { settings, title } = action.payload;
             const id = `tile-${uuid()}`; // Generate a unique ID for the new tile
             const newTitle = title || `Tile ${Object.keys(state.tiles).length + 1}`;
-            let newLayout: MosaicNode<ViewId> = state.layout
+            let newLayout: MosaicNode<string> = state.layout
                 ? {
                     direction: 'row',
                     first: state.layout,
@@ -105,9 +106,9 @@ const mosaicReducer = (
 
 // Helper function to remove a node from the mosaic layout
 const removeNode = (
-    currentNode: MosaicNode<ViewId> | null,
-    nodeToRemove: ViewId,
-): MosaicNode<ViewId> | null => {
+    currentNode: MosaicNode<string> | null,
+    nodeToRemove: string,
+): MosaicNode<string> | null => {
     if (!currentNode) return null;
 
     if (typeof currentNode === 'string') {
@@ -191,15 +192,15 @@ export const MosaicProvider: FC<MosaicProviderProps> = ({ children }) => {
         dispatch({ type: 'ADD_TILE', payload: { settings, title } });
     };
 
-    const updateTile = (id: ViewId, settings: TileSettings) => {
+    const updateTile = (id: string, settings: TileSettings) => {
         dispatch({ type: 'UPDATE_TILE', payload: { id, settings } });
     };
 
-    const removeTile = (id: ViewId) => {
+    const removeTile = (id: string) => {
         dispatch({ type: 'REMOVE_TILE', payload: { id } });
     };
 
-    const setLayout = (layout: MosaicNode<ViewId> | null) => {
+    const setLayout = (layout: MosaicNode<string> | null) => {
         dispatch({ type: 'SET_LAYOUT', payload: { layout } });
     };
 

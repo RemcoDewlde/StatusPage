@@ -42,7 +42,6 @@ export const DevView = (props: { api: string }) => {
                 let x = sortComponentsByGroup(data);
                 console.log(x);
 
-                // console.log(data)
                 setData(data);
             } catch (error) {
                 console.error('Error fetching data:', error);

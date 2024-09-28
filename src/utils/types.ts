@@ -73,3 +73,21 @@ export class IntervalType extends BaseSettingType {
     }
 }
 
+@RegisterType
+export class DevSettingsType extends BaseSettingType {
+    devMode: boolean;
+
+    constructor(
+        devMode: boolean = false,
+    ) {
+        super();
+        this.devMode = devMode;
+    }
+
+    toObject(): object {
+        return {
+            devMode: this.devMode,
+        };
+    }
+}
+

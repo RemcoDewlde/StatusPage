@@ -74,7 +74,7 @@ const Home = () => {
                         >
                             <div className="p-4 flex flex-col h-full">
                                 <div className="flex-1">
-                                    <ContentComponentFactory viewType={settings.viewType} api={settings.api} />
+                                    <ContentComponentFactory viewType={settings.viewType} api={settings.api} additionalSettings={settings.additionalSettings} />
                                 </div>
                                 <div className="mt-4 flex space-x-2">
                                     <Button variant="destructive" onClick={() => removeTile(id)}>

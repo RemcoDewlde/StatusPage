@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PageSetting, PageSettingType } from "@/utils/types";
+import { DevSettingsType, PageSetting, PageSettingType } from "@/utils/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Github, Plus, Trash2 } from "lucide-react";
@@ -9,12 +9,14 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { Command } from "@/enums/command.enum.ts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select.tsx";
 import { useRefresh } from "@/context/RefreshContext.tsx";
+import { Switch } from "@/components/ui/switch.tsx";
 
 export default function Settings() {
     const [settings, setSettings] = useState<PageSetting[]>([]);
     const [newPageId, setNewPageId] = useState("");
     const [newName, setNewName] = useState("");
     const [version, setVersion] = useState("dev");
+    const [isDevMode, setIsDevMode] = useState(false);
     const { refreshInterval, setRefreshInterval } = useRefresh();
     const { addToast } = useToast();
 
@@ -34,7 +36,17 @@ export default function Settings() {
             }
         };
 
+        const fetchDevSettings = async () => {
+            const loadedDevSettings = await DevSettingsType.load((message: string) =>
+                addToast(message + "bob", ToastType.Info, true)
+            );
+            if (loadedDevSettings) {
+                setIsDevMode(loadedDevSettings.devMode);
+            }
+        };
+
         fetchSettings();
+        fetchDevSettings();
     }, [addToast]);
 
     useEffect(() => {
@@ -43,6 +55,7 @@ export default function Settings() {
                 let appVersion: string = await invoke(Command.GetApplicationVersion.toString());
                 setVersion(appVersion.toString());
             } catch (error) {
+                console.error("Failed to fetch version:", error);
             }
         };
         fetchVersion();
@@ -94,8 +107,20 @@ export default function Settings() {
         await saveSettings(newSettings);
     };
 
+    const saveDevSettings = async (newDevSettings: DevSettingsType) => {
+        await DevSettingsType.save(newDevSettings, (message: string) =>
+            addToast(message, ToastType.Info, true)
+        );
+    };
+
+    const handleDevModeToggle = async (checked: boolean) => {
+        setIsDevMode(checked);
+        await saveDevSettings(new DevSettingsType(checked));
+    };
+
     return (
         <div>
+            {/* Saved statusPages */}
             <Card className="w-full max-w-4xl mx-auto my-4">
                 <CardHeader>
                     <CardTitle>Saved StatusPages</CardTitle>
@@ -147,6 +172,8 @@ export default function Settings() {
                     </div>
                 </CardContent>
             </Card>
+
+            {/* Interval settings for refresh api calls */}
             <Card className="w-full max-w-4xl mx-auto my-4">
                 <CardHeader>
                     <CardTitle>Global Update Interval</CardTitle>
@@ -174,6 +201,21 @@ export default function Settings() {
                     </div>
                 </CardContent>
             </Card>
+
+            {/* DevMode */}
+            <Card className="w-full max-w-4xl mx-auto my-4">
+                <CardHeader>
+                    <CardTitle>Developer Mode</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center space-x-4">
+                        <span className="text-sm">Enable Dev Mode:</span>
+                        <Switch checked={isDevMode} onCheckedChange={handleDevModeToggle} />
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Footer */}
             <Card className="max-w-4xl mx-auto bottom-2">
                 <CardContent className="flex flex-col items-center justify-center text-sm text-muted-foreground py-4">
                     <div className="flex items-center">

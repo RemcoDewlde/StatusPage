@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useMosaic } from '@/context/MosaicContext';
-import { PageSettingType } from '@/utils/types';
+import { DevSettingsType, PageSettingType } from "@/utils/types";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CardContent, CardFooter } from '@/components/ui/card';
@@ -16,7 +16,12 @@ const fetchApiOptions = async () => {
     return loadedSettings ? loadedSettings.settings : [];
 };
 
-const viewTypes = ['details', 'graph', 'summary', 'dev'];
+const fetchDevSettings = async () => {
+    const loadedDevSettings = await DevSettingsType.load();
+    return loadedDevSettings ? loadedDevSettings.devMode : false;
+}
+
+const viewTypes = ['details', 'graph', 'summary'];
 
 const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
     const { tiles, addTile, updateTile } = useMosaic();
@@ -33,9 +38,15 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
     });
 
     const [apiOptions, setApiOptions] = useState<{ pageId: string; name: string }[]>([]);
+    const [viewTypeSettings, setViewTypeSetView] = useState<string[]>(viewTypes);
 
     useEffect(() => {
         fetchApiOptions().then(setApiOptions);
+        fetchDevSettings().then((devMode) => {
+            if (devMode) {
+                setViewTypeSetView([...viewTypes, 'dev']);
+            }
+        });
     }, []);
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -43,7 +54,12 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
         if (tileId) {
             updateTile(tileId, formData);
         } else {
-            addTile(formData);
+            let apiName = apiOptions.find(option => option.pageId === formData.api);
+            let title = `${apiName?.name} - ${formData.viewType}`
+            if (formData.additionalSettings.chartType) {
+                title += ` - ${formData.additionalSettings.chartType}`;
+            }
+            addTile(formData, title);
         }
         onClose();
     };
@@ -129,7 +145,7 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
                             <SelectValue placeholder="Select view type" />
                         </SelectTrigger>
                         <SelectContent>
-                            {viewTypes.map((type) => (
+                            {viewTypeSettings.map((type) => (
                                 <SelectItem key={type} value={type}>
                                     {type.charAt(0).toUpperCase() + type.slice(1)}
                                 </SelectItem>
