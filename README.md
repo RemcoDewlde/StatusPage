@@ -10,13 +10,13 @@ StatusPage is a modern, customizable status page application built with Tauri, T
 allows you to create a beautiful and responsive status page for your services, providing real-time updates to your
 users.
 
-<img width="882" alt="Screenshot 2024-09-18 at 21 09 03" src="https://github.com/user-attachments/assets/27475649-a2f5-460c-92ad-ef7740606d82">
+![image](https://github.com/user-attachments/assets/9fb74b23-eae3-4e90-863c-097e64aa507f)
 
 [//]: # (![StatusPage Screenshot]&#40;/placeholder.svg?height=300&width=600&#41;)
 
 ## 🌟 Features
 
-- 📊 Real-time status updates
+- 📊 automatic status updates
 - 🎨 Customizable layout
 - 🔧 Easy configuration and setup
 - 📱 Fully responsive designs
@@ -38,6 +38,4 @@ users.
 
 - [ ] Add several new tiles to show Data on the dashboard
 - [ ] Update the styling of the Mosaic tiles / layout
-- [ ] Add styles screenshots of the application to the readme
 - [ ] Fix the bundle/build for MacOS
-- 
