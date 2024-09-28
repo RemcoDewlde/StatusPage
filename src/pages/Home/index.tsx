@@ -1,54 +1,26 @@
-import { Mosaic, MosaicWindow } from 'react-mosaic-component';
-import 'react-mosaic-component/react-mosaic-component.css';
-import ZeroState from '@/components/mozaic/ZeroState.tsx';
-import { useMosaic } from '@/context/MosaicContext.tsx';
-import ContentComponentFactory from '@/utils/ContentComponentFactory.tsx';
-import { Button } from '@/components/ui/button.tsx';
-import { useFormDialog } from '@/context/FormDialogContext.tsx';
-
-import './custom-mosaic-styles.css';
+import { Mosaic, MosaicWindow } from "react-mosaic-component";
+import "react-mosaic-component/react-mosaic-component.css";
+import ZeroState from "@/components/mozaic/ZeroState.tsx";
+import { useMosaic } from "@/context/MosaicContext.tsx";
+import ContentComponentFactory from "@/utils/ContentComponentFactory.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { Settings2 } from "lucide-react";
+import { useFormDialog } from "@/context/FormDialogContext.tsx";
+import "./custom-mosaic-styles.css";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.tsx';
-
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu.tsx";
 
 const Home = () => {
     const { layout, tiles, titles, removeTile, setLayout } = useMosaic();
     const { openDialog } = useFormDialog();
-    // const context = useContext(MosaicWindowContext);
-    // const [toggleAdditionalControls, setToggleAdditionalControls] = useState(false);
 
     const handleEditTileClick = (id: string) => {
         openDialog(id);
     };
-
-    // const handleTogle = () => {
-    //     setToggleAdditionalControls(!toggleAdditionalControls);
-    // };
-
-    const additionalControls = (
-        <div className="p-4 space-y-4">
-            <p className="text-gray-700">Additional Settings:</p>
-            <Button onClick={() => alert('Action 1')}>Action 1</Button>
-            <Button onClick={() => alert('Action 2')}>Action 2</Button>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="outline">More Options</Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem onSelect={() => alert('Option 1')}>Option 1</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => alert('Option 2')}>Option 2</DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-            {/*<Button variant="destructive" onClick={toggleAdditionalControls}>*/}
-            {/*    /!*TODO: fix this*!/*/}
-            {/*    Close*/}
-            {/*</Button>*/}
-        </div>
-    );
 
     return (
         <div className="custom-layout-container min-h-screen w-full bg-gray-100 dark:bg-gray-900 rounded-lg">
@@ -62,25 +34,45 @@ const Home = () => {
                     return (
                         <MosaicWindow<string>
                             path={path}
-                            title={title || 'Untitled'}
+                            title={title || "Untitled"}
                             toolbarControls={
                                 <div className="mosaic-window-controls flex items-center space-x-2">
-                                    {/*<Button size="sm" onClick={handleTogle()}>*/}
-                                    {/*    Options*/}
-                                    {/*</Button>*/}
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                className="h-8 w-8 p-0 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+                                            >
+                                                <Settings2 className="h-4 w-4" />
+                                                <span className="sr-only">Open settings menu</span>
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="w-40 cursor-default">
+                                            <DropdownMenuItem
+                                                onSelect={() => handleEditTileClick(id)}
+                                                className="flex items-center cursor-pointer"
+                                            >
+                                                <span>Edit</span>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                onSelect={() => removeTile(id)}
+                                                className="flex items-center text-destructive focus:text-destructive cursor-pointer"
+                                            >
+                                                <span>Remove</span>
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
                             }
-                            additionalControls={additionalControls}
                         >
                             <div className="p-4 flex flex-col h-full">
                                 <div className="flex-1">
-                                    <ContentComponentFactory viewType={settings.viewType} api={settings.api} additionalSettings={settings.additionalSettings} />
-                                </div>
-                                <div className="mt-4 flex space-x-2">
-                                    <Button variant="destructive" onClick={() => removeTile(id)}>
-                                        Remove
-                                    </Button>
-                                    <Button onClick={() => handleEditTileClick(id)}>Edit</Button>
+                                    <ContentComponentFactory
+                                        viewType={settings.viewType}
+                                        api={settings.api}
+                                        additionalSettings={settings.additionalSettings}
+                                    />
                                 </div>
                             </div>
                         </MosaicWindow>
