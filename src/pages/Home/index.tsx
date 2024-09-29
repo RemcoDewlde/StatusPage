@@ -6,6 +6,8 @@ import ContentComponentFactory from "@/utils/ContentComponentFactory.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Settings2 } from "lucide-react";
 import { useFormDialog } from "@/context/FormDialogContext.tsx";
+// @ts-ignore
+import domtoimage from "dom-to-image-more";
 import "./custom-mosaic-styles.css";
 import {
     DropdownMenu,
@@ -13,13 +15,45 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
+import { useEffect, useRef, useState } from "react";
+import { DevSettingsType } from "@/utils/types.ts";
 
 const Home = () => {
+    const tileRefs = useRef<{ [id: string]: HTMLElement | null }>({});
     const { layout, tiles, titles, removeTile, setLayout } = useMosaic();
+    const [devSettings, setDevSettings] = useState<DevSettingsType | null>(null);
     const { openDialog } = useFormDialog();
+
+    useEffect(() => {
+        const loadSettings = async () => {
+            const loadedDevSettings = await DevSettingsType.load();
+            setDevSettings(loadedDevSettings);
+        };
+
+        loadSettings();
+    }, []);
 
     const handleEditTileClick = (id: string) => {
         openDialog(id);
+    };
+
+    const handleCopyAsImageClick = (id: string) => {
+        // TODO: fix the styling for the exportred image
+        const node = tileRefs.current[id];
+        if (node) {
+            domtoimage.toPng(node)
+                .then((dataUrl: any) => {
+                    const link = document.createElement("a");
+                    link.download = `${id}.png`;
+                    link.href = dataUrl;
+                    link.click();
+                })
+                .catch((error: any) => {
+                    console.error("Error generating image:", error);
+                });
+        } else {
+            console.error("No node found for id:", id);
+        }
     };
 
     return (
@@ -49,6 +83,14 @@ const Home = () => {
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end" className="w-40 cursor-default">
+                                            {devSettings?.devMode && (
+                                                <DropdownMenuItem
+                                                    onSelect={() => handleCopyAsImageClick(id)}
+                                                    className="flex items-center cursor-pointer"
+                                                >
+                                                    <span>Copy as Image</span>
+                                                </DropdownMenuItem>
+                                            )}
                                             <DropdownMenuItem
                                                 onSelect={() => handleEditTileClick(id)}
                                                 className="flex items-center cursor-pointer"
@@ -66,7 +108,10 @@ const Home = () => {
                                 </div>
                             }
                         >
-                            <div className="p-4 flex flex-col h-full">
+                            <div className="p-4 flex flex-col h-full"
+                                 ref={(node) => {
+                                     tileRefs.current[id] = node;
+                                 }}>
                                 <div className="flex-1">
                                     <ContentComponentFactory
                                         viewType={settings.viewType}

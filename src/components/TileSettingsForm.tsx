@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CardContent, CardFooter } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
+import { Switch } from "@/components/ui/switch.tsx";
+import { ApiAction, useApi } from "@/context/apiContext.tsx";
 
 interface TileFormProps {
     onClose: () => void;
@@ -24,6 +26,12 @@ const fetchDevSettings = async () => {
 const viewTypes = ['details', 'graph', 'summary'];
 
 const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
+
+    const { fetchStatusPageData } = useApi();
+    // New state variables
+    const [groups, setGroups] = useState<{ id: string; name: string }[]>([]);
+    const [hasGroups, setHasGroups] = useState<boolean>(false);
+
     const { tiles, addTile, updateTile } = useMosaic();
     const initialSettings = tileId ? tiles[tileId] : {
         viewType: '',
@@ -48,6 +56,47 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
             }
         });
     }, []);
+
+
+    useEffect(() => {
+        const fetchGroups = async () => {
+            if (formData.api) {
+                try {
+                    // Fetch data from the selected API
+                    const data = await fetchStatusPageData(formData.api, ApiAction.Components);
+
+                    // Process data to extract groups
+                    const components = data.components;
+
+                    // Create a map of group ids to group names
+                    const groupMap = new Map<string, string>();
+
+                    components.forEach((component) => {
+                        if (component.group && component.id && component.name) {
+                            // This component is a group
+                            groupMap.set(component.id, component.name);
+                        }
+                    });
+
+                    // Now create the groupList
+                    const groupList = Array.from(groupMap.entries()).map(([id, name]) => ({ id, name }));
+
+                    console.log('groupList', groupList);
+
+                    setGroups(groupList);
+                    setHasGroups(groupList.length > 0);
+                } catch (error) {
+                    console.error('Error fetching groups:', error);
+                }
+            } else {
+                // If no API is selected, reset the groups
+                setGroups([]);
+                setHasGroups(false);
+            }
+        };
+
+        fetchGroups();
+    }, [formData.api, fetchStatusPageData]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -109,6 +158,60 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
                         </Select>
                     </div>
                 );
+            case 'summary':
+                return (
+                    <div className="space-y-4">
+                        {/* Only show if the API data has groups */}
+                        {hasGroups && (
+                            <>
+                                <label className="block text-sm font-medium text-gray-700">Show only one group?</label>
+                                <Switch
+                                    disabled={false}
+                                    checked={formData.additionalSettings.showOneGroup || false}
+                                    onCheckedChange={(checked) =>
+                                        setFormData({
+                                            ...formData,
+                                            additionalSettings: {
+                                                ...formData.additionalSettings,
+                                                showOneGroup: checked,
+                                            },
+                                        })
+                                    }
+                                />
+                            </>
+                        )}
+
+                        {/* Show group selection if 'Show only one group' is checked */}
+                        {formData.additionalSettings.showOneGroup && hasGroups && (
+                            <>
+                                <label className="block text-sm font-medium text-gray-700">Group</label>
+                                <Select
+                                    value={formData.additionalSettings.groupId || ''}
+                                    onValueChange={(value) =>
+                                        setFormData({
+                                            ...formData,
+                                            additionalSettings: {
+                                                ...formData.additionalSettings,
+                                                groupId: value,
+                                            },
+                                        })
+                                    }
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select group" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {groups.map((group) => (
+                                            <SelectItem key={group.id} value={group.id}>
+                                                {group.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </>
+                        )}
+                    </div>
+                    );
             default:
                 return null;
         }

@@ -12,7 +12,7 @@ interface FactoryProps {
 
 const ContentComponentFactory: FC<FactoryProps> = ({ viewType, api, additionalSettings }) => {
     const componentsMap: Record<string, ReactNode> = {
-        summary: <SummaryView api={api} />,
+        summary: <SummaryView api={api} additionalSettings={additionalSettings}/>,
         details: <DetailsView api={api} />,
         graph: <GraphView api={api} additionalSettings={additionalSettings} />,
         dev: <DevView api={api} />,
