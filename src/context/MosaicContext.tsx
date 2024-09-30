@@ -42,7 +42,6 @@ const mosaicReducer = (
 ): typeof initialState => {
     switch (action.type) {
         case 'ADD_TILE': {
-            console.log('ADD_TILE', action.payload);
             const { settings, title } = action.payload;
             const id = `tile-${uuid()}`; // Generate a unique ID for the new tile
             const newTitle = title || `Tile ${Object.keys(state.tiles).length + 1}`;

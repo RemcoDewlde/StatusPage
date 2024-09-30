@@ -1,11 +1,5 @@
-import {
-    createContext,
-    useContext,
-    useEffect,
-    useState,
-    ReactNode, FC
-} from "react";
-import { IntervalType } from "@/utils/types.ts";
+import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react';
+import { IntervalType } from '@/utils/types.ts';
 
 interface RefreshContextProps {
     refreshInterval: number;
@@ -14,7 +8,7 @@ interface RefreshContextProps {
 }
 
 const RefreshContext = createContext<RefreshContextProps | undefined>(
-    undefined
+    undefined,
 );
 
 export const useRefresh = (): RefreshContextProps => {
@@ -31,11 +25,11 @@ interface RefreshProviderProps {
 }
 
 export const RefreshProvider: FC<RefreshProviderProps> = ({
-                                                                    children,
-                                                                    initialInterval = 5,
-                                                                }) => {
+                                                              children,
+                                                              initialInterval = 5,
+                                                          }) => {
     const [refreshInterval, setRefreshIntervalState] = useState<number>(
-        initialInterval
+        initialInterval,
     );
     const [refreshSignal, setRefreshSignal] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -71,20 +65,17 @@ export const RefreshProvider: FC<RefreshProviderProps> = ({
         // Clear any existing interval
         if (intervalId) {
             clearInterval(intervalId);
-            console.log('Cleared existing interval');
         }
 
         // Only set up polling if refreshInterval is greater than 0
         if (refreshInterval > 0) {
             const id = setInterval(() => {
                 setRefreshSignal((prev) => {
-                    console.log('Incrementing refreshSignal');
                     return prev + 1;
                 });
             }, refreshInterval * 60 * 1000); // Convert minutes to milliseconds
 
             setIntervalId(id);
-            console.log(`Set new interval: every ${refreshInterval} minutes`);
         } else {
             console.log('Automatic refreshing is disabled.');
         }
@@ -93,7 +84,6 @@ export const RefreshProvider: FC<RefreshProviderProps> = ({
         return () => {
             if (intervalId) {
                 clearInterval(intervalId);
-                console.log('Cleanup: Cleared interval on unmount or interval change');
             }
         };
     }, [refreshInterval]);

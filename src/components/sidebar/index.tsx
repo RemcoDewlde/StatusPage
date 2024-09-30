@@ -5,10 +5,11 @@ import { Link } from 'react-router-dom';
 import { ToastType, useToast } from '../../context/toastContext.tsx';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CogIcon, LayoutGrid, PanelsTopLeft } from 'lucide-react';
+import { CogIcon, CopyPlus, PanelsTopLeft } from 'lucide-react';
 import Home from '@/pages/Home';
 import Settings from '@/pages/Settings';
 import { useFormDialog } from '@/context/FormDialogContext.tsx';
+
 
 const Sidebar = () => {
     const [name, setName] = useState('dev');
@@ -25,7 +26,7 @@ const Sidebar = () => {
         { component: Settings, path: '/settings', name: ('Settings'), icon: CogIcon },
         {
             name: 'Add Status Tile',
-            icon: LayoutGrid,
+            icon: CopyPlus,
             onClick: () => {
                 handleAddTile();
             },

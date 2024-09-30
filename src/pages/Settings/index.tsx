@@ -1,21 +1,21 @@
-import { useEffect, useState } from "react";
-import { DevSettingsType, PageSetting, PageSettingType } from "@/utils/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Github, Plus, Trash2 } from "lucide-react";
-import { ToastType, useToast } from "@/context/toastContext.tsx";
-import { Input } from "@/components/ui/input";
-import { invoke } from "@tauri-apps/api/tauri";
-import { Command } from "@/enums/command.enum.ts";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select.tsx";
-import { useRefresh } from "@/context/RefreshContext.tsx";
-import { Switch } from "@/components/ui/switch.tsx";
+import { useEffect, useState } from 'react';
+import { DevSettingsType, PageSetting, PageSettingType } from '@/utils/types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Github, Plus, Trash2 } from 'lucide-react';
+import { ToastType, useToast } from '@/context/toastContext.tsx';
+import { Input } from '@/components/ui/input';
+import { invoke } from '@tauri-apps/api/tauri';
+import { Command } from '@/enums/command.enum.ts';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
+import { useRefresh } from '@/context/RefreshContext.tsx';
+import { Switch } from '@/components/ui/switch.tsx';
 
 export default function Settings() {
     const [settings, setSettings] = useState<PageSetting[]>([]);
-    const [newPageId, setNewPageId] = useState("");
-    const [newName, setNewName] = useState("");
-    const [version, setVersion] = useState("dev");
+    const [newPageId, setNewPageId] = useState('');
+    const [newName, setNewName] = useState('');
+    const [version, setVersion] = useState('dev');
     const [isDevMode, setIsDevMode] = useState(false);
     const { refreshInterval, setRefreshInterval } = useRefresh();
     const { addToast } = useToast();
@@ -29,7 +29,7 @@ export default function Settings() {
     useEffect(() => {
         const fetchSettings = async () => {
             const loadedSettings = await PageSettingType.load((message: string) =>
-                addToast(message, ToastType.Info, true)
+                addToast(message, ToastType.Info, true),
             );
             if (loadedSettings) {
                 setSettings(loadedSettings.settings);
@@ -38,7 +38,7 @@ export default function Settings() {
 
         const fetchDevSettings = async () => {
             const loadedDevSettings = await DevSettingsType.load((message: string) =>
-                addToast(message + "bob", ToastType.Info, true)
+                addToast(message, ToastType.Info, true),
             );
             if (loadedDevSettings) {
                 setIsDevMode(loadedDevSettings.devMode);
@@ -55,7 +55,7 @@ export default function Settings() {
                 let appVersion: string = await invoke(Command.GetApplicationVersion.toString());
                 setVersion(appVersion.toString());
             } catch (error) {
-                console.error("Failed to fetch version:", error);
+                console.error('Failed to fetch version:', error);
             }
         };
         fetchVersion();
@@ -63,13 +63,13 @@ export default function Settings() {
 
     const saveSettings = async (newSettings: PageSettingType) => {
         await PageSettingType.save(newSettings, (message: string) =>
-            addToast(message, ToastType.Info, true)
+            addToast(message, ToastType.Info, true),
         );
     };
 
     const updateSetting = (pageId: string, name: string) => {
         const updatedSettings = settings.map((setting) =>
-            setting.pageId === pageId ? { ...setting, name } : setting
+            setting.pageId === pageId ? { ...setting, name } : setting,
         );
         setSettings(updatedSettings);
     };
@@ -77,15 +77,15 @@ export default function Settings() {
     const handleIntervalChange = async (value: string) => {
         const interval = parseInt(value);
         if (isNaN(interval)) {
-            addToast("Invalid interval value.", ToastType.Warning, true);
+            addToast('Invalid interval value.', ToastType.Warning, true);
             return;
         }
         try {
             await setRefreshInterval(interval);
             addToast(`Refresh interval set to ${interval} minutes.`, ToastType.Success, true);
         } catch (error) {
-            console.error("Error setting refresh interval:", error);
-            addToast("Failed to set refresh interval.", ToastType.Error, true);
+            console.error('Error setting refresh interval:', error);
+            addToast('Failed to set refresh interval.', ToastType.Error, true);
         }
     };
 
@@ -95,8 +95,8 @@ export default function Settings() {
             const newSettings = new PageSettingType(newSettingsArray);
             setSettings(newSettingsArray);
             await saveSettings(newSettings);
-            setNewPageId("");
-            setNewName("");
+            setNewPageId('');
+            setNewName('');
         }
     };
 
@@ -109,7 +109,7 @@ export default function Settings() {
 
     const saveDevSettings = async (newDevSettings: DevSettingsType) => {
         await DevSettingsType.save(newDevSettings, (message: string) =>
-            addToast(message, ToastType.Info, true)
+            addToast(message, ToastType.Info, true),
         );
     };
 
