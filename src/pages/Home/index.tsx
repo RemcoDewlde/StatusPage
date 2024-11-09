@@ -22,6 +22,8 @@ const Home = () => {
     const tileRefs = useRef<{ [id: string]: HTMLElement | null }>({});
     const { layout, tiles, titles, removeTile, setLayout } = useMosaic();
     const [devSettings, setDevSettings] = useState<DevSettingsType | null>(null);
+    const [tileDimensions, setTileDimensions] = useState<Record<string, { width: number; height: number }>>({});
+
     const { openDialog } = useFormDialog();
 
     useEffect(() => {
@@ -38,7 +40,9 @@ const Home = () => {
     };
 
     const handleCopyAsImageClick = (id: string) => {
-        // TODO: fix the styling for the exportred image
+        /**
+         * TODO: fix the styling for the exportred image
+         */
         const node = tileRefs.current[id];
         if (node) {
             domtoimage.toPng(node)
@@ -56,12 +60,34 @@ const Home = () => {
         }
     };
 
+    const handleResize = () => {
+        if (!tileRefs.current) return;
+
+        const newDimensions: Record<string, { width: number; height: number }> = {};
+
+        Object.entries(tileRefs.current).forEach(([id, node]) => {
+            if (node) {
+                const { clientWidth, clientHeight } = node;
+                newDimensions[id] = { width: clientWidth, height: clientHeight };
+            }
+        });
+
+        setTileDimensions(newDimensions);
+    };
+
+    useEffect(() => {
+        handleResize();
+    }, [layout]);
+
     return (
         <div className="custom-layout-container min-h-screen w-full bg-gray-100 dark:bg-gray-900 rounded-lg">
             <Mosaic<string>
                 className="min-h-screen bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 shadow-inner rounded-lg border-none"
                 value={layout}
-                onChange={(newLayout) => setLayout(newLayout)}
+                onChange={(newLayout) => {
+                    setLayout(newLayout);
+                    handleResize();
+                }}
                 renderTile={(id, path) => {
                     const settings = tiles[id];
                     const title = titles[id];
@@ -117,6 +143,7 @@ const Home = () => {
                                         viewType={settings.viewType}
                                         api={settings.api}
                                         additionalSettings={settings.additionalSettings}
+                                        dimensions={tileDimensions[id]}
                                     />
                                 </div>
                             </div>

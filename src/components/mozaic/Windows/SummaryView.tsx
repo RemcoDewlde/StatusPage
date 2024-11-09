@@ -17,7 +17,7 @@ const sortComponentsByGroup = (data: StatusPageData) => {
     const groups: { [key: string]: Component[] } = {};
 
     data.components.forEach((component) => {
-        const groupId = component.group_id || "ungrouped";
+        const groupId = component.group_id ?? "ungrouped";
 
         if (!groups[groupId]) {
             groups[groupId] = [];
@@ -33,9 +33,7 @@ export const SummaryView = ({ api, additionalSettings }: SummaryViewProps) => {
     const [isLoading, setIsLoading] = useState(true);
     const { fetchStatusPageData } = useApi();
     const { refreshSignal } = useRefresh();
-    const [groupedComponents, setGroupedComponents] = useState<{
-        [key: string]: Component[];
-    }>({});
+    const [groupedComponents, setGroupedComponents] = useState<{ [key: string]: Component[]; }>({});
     const [groupMap, setGroupMap] = useState<{ [key: string]: Component }>({});
 
     const showOneGroup = additionalSettings?.showOneGroup;
@@ -97,45 +95,44 @@ export const SummaryView = ({ api, additionalSettings }: SummaryViewProps) => {
                 {data.page.name}
             </h3>
             {showInGroups ? (
-                    <ScrollArea className="h-full">
-                        <Accordion type="multiple">
-                            {Object.entries(groupedComponents).map(
-                                ([groupId, components]) => (
-                                    <AccordionItem key={groupId} value={groupId}>
-                                        <AccordionTrigger>
-                                            {groupMap[groupId]?.name || "Ungrouped"}
-                                        </AccordionTrigger>
-                                        <AccordionContent>
-                                            <ul className="divide-y divide-gray-200">
-                                                {components.map((component) => (
-                                                    <li
-                                                        key={component.id}
-                                                        className="py-2 flex items-center justify-between"
-                                                    >
-                                                        <div className="flex items-center">
-                                                            <StatusPageIcon status={component.status} />
-                                                            <span className="ml-2 text-sm text-gray-900">
+                <ScrollArea className="h-full">
+                    <Accordion type="multiple">
+                        {Object.entries(groupedComponents).map(
+                            ([groupId, components]) => (
+                                <AccordionItem key={groupId} value={groupId}>
+                                    <AccordionTrigger>
+                                        {groupMap[groupId]?.name || "Ungrouped"}
+                                    </AccordionTrigger>
+                                    <AccordionContent>
+                                        <ul className="divide-y divide-gray-200">
+                                            {components.map((component) => (
+                                                <li
+                                                    key={component.id}
+                                                    className="py-2 flex items-center justify-between"
+                                                >
+                                                    <div className="flex items-center">
+                                                        <StatusPageIcon status={component.status} />
+                                                        <span className="ml-2 text-sm text-gray-900">
                                                                     {component.name}
                                                                 </span>
-                                                        </div>
-                                                        <span className="text-xs text-gray-500 capitalize">
+                                                    </div>
+                                                    <span className="text-xs text-gray-500 capitalize">
                                                             {component.status.replace("_", " ")}
                                                         </span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                )
-                            )}
-                        </Accordion>
-                    </ScrollArea>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            )
+                        )}
+                    </Accordion>
+                </ScrollArea>
             ) : showOneGroup && groupId ? (
-                // Render only one group
                 <>
-                <p>
-                    {groupMap[groupId]?.name || "Ungrouped"}
-                </p>
+                    <p>
+                        {groupMap[groupId]?.name || "Ungrouped"}
+                    </p>
                     <ScrollArea className="h-full">
                         <ul className="divide-y divide-gray-200">
                             {groupedComponents[groupId]?.map((component) => (
