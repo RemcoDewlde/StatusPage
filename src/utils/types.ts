@@ -7,6 +7,12 @@ export interface PageSetting {
     name: string;
 }
 
+export type TileSettings = {
+    api: string;
+    viewType: string;
+    additionalSettings: Record<string, any>;
+};
+
 @RegisterType
 export class PageSettingType extends BaseSettingType {
     settings: PageSetting[];
@@ -22,16 +28,6 @@ export class PageSettingType extends BaseSettingType {
         };
     }
 }
-
-export type ViewId = string;
-export type ApiType = string;
-export type ViewType = string;
-
-export type TileSettings = {
-    api: ApiType;
-    viewType: ViewType;
-    additionalSettings: Record<string, any>;
-};
 
 @RegisterType
 export class LayOutType extends BaseSettingType {
@@ -58,3 +54,40 @@ export class LayOutType extends BaseSettingType {
         };
     }
 }
+
+@RegisterType
+export class IntervalType extends BaseSettingType {
+    interval: number;
+
+    constructor(
+        interval: number = 0,
+    ) {
+        super();
+        this.interval = interval;
+    }
+
+    toObject(): object {
+        return {
+            interval: this.interval,
+        };
+    }
+}
+
+@RegisterType
+export class DevSettingsType extends BaseSettingType {
+    devMode: boolean;
+
+    constructor(
+        devMode: boolean = false,
+    ) {
+        super();
+        this.devMode = devMode;
+    }
+
+    toObject(): object {
+        return {
+            devMode: this.devMode,
+        };
+    }
+}
+

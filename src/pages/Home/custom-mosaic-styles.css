@@ -29,6 +29,8 @@
     right: 3px;
     bottom: 3px;
     left: 3px;
+    margin-right: 3px;
+    margin-bottom: 3px;
 }
 
 /* Resizable Split Styles */
@@ -72,7 +74,6 @@
     right: 0;
 }
 
-/* Mosaic Tile Styles */
 .mosaic-tile {
     position: absolute;
     margin: 3px;
@@ -92,19 +93,16 @@
     display: block;
 }
 
-/* ... (Keeping existing drop-target styles) ... */
 
-/* Mosaic Window Styles */
 .mosaic-window,
 .mosaic-preview {
     position: relative;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    /* Updated styles for shadcn Card */
-    background-color: #ffffff; /* bg-white */
-    border-radius: 0.5rem; /* rounded-lg */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* shadow */
+    background-color: #ffffff;
+    border-radius: 0.6rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .mosaic-window .mosaic-window-toolbar,
@@ -246,173 +244,4 @@
 .mosaic-window .mosaic-window-controls .button:focus,
 .mosaic-preview .mosaic-window-controls .button:focus {
     outline: none;
-}
-
-/* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-    .mosaic-window,
-    .mosaic-preview {
-        background-color: #1f2937; /* bg-gray-800 */
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    }
-
-    .mosaic-window .mosaic-window-toolbar,
-    .mosaic-preview .mosaic-window-toolbar {
-        background-color: #1f2937; /* bg-gray-800 */
-        border-bottom: 1px solid #374151; /* border-gray-700 */
-    }
-
-    .mosaic-window .mosaic-window-title,
-    .mosaic-preview .mosaic-window-title {
-        color: #f9fafb; /* text-gray-100 */
-    }
-
-    .mosaic-window .mosaic-window-body,
-    .mosaic-preview .mosaic-window-body {
-        background-color: #1f2937; /* bg-gray-800 */
-    }
-
-    .mosaic-window .mosaic-window-controls .button,
-    .mosaic-preview .mosaic-window-controls .button {
-        color: #9ca3af; /* text-gray-400 */
-    }
-
-    .mosaic-window .mosaic-window-controls .button:hover,
-    .mosaic-preview .mosaic-window-controls .button:hover {
-        color: #f9fafb; /* text-gray-100 */
-    }
-}
-
-/* Resizable Handle Hover Effect */
-.mosaic-split:hover .mosaic-split-line {
-    background: #e5e7eb; /* bg-gray-200 */
-}
-
-@media (prefers-color-scheme: dark) {
-    .mosaic-split:hover .mosaic-split-line {
-        background: #374151; /* bg-gray-700 */
-    }
-}
-
-/* Root container for the mosaic */
-.mosaic {
-    height: 100%;
-    width: 100%;
-    position: relative;
-    background-color: #f9fafb; /* bg-gray-100 */
-}
-
-.mosaic,
-.mosaic > * {
-    box-sizing: border-box;
-}
-
-.mosaic-root {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-}
-
-/* Mosaic Window Styles */
-.mosaic-window,
-.mosaic-preview {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    background-color: #ffffff; /* bg-white */
-    border-radius: 0.5rem; /* rounded-lg */
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* shadow-sm */
-    margin: 3px;
-}
-
-.mosaic-window .mosaic-window-toolbar,
-.mosaic-preview .mosaic-window-toolbar {
-    z-index: 4;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-shrink: 0;
-    height: 3rem; /* 48px */
-    background-color: #ffffff; /* bg-white */
-    padding: 0 1rem; /* px-4 */
-    border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
-    border-top-left-radius: 0.5rem; /* rounded-t-lg */
-    border-top-right-radius: 0.5rem; /* rounded-t-lg */
-    cursor: move;
-}
-
-.mosaic-window .mosaic-window-title,
-.mosaic-preview .mosaic-window-title {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    font-size: 1rem; /* text-base */
-    font-weight: 600; /* font-semibold */
-    color: #111827; /* text-gray-900 */
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-.mosaic-window .mosaic-window-controls,
-.mosaic-preview .mosaic-window-controls {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem; /* space-x-2 */
-}
-
-.mosaic-window .mosaic-window-body,
-.mosaic-preview .mosaic-window-body {
-    position: relative;
-    flex: 1;
-    background-color: #ffffff; /* bg-white */
-    padding: 1rem; /* p-4 */
-    overflow: auto;
-    border-bottom-left-radius: 0.5rem; /* rounded-b-lg */
-    border-bottom-right-radius: 0.5rem; /* rounded-b-lg */
-}
-
-/* Resizable Handle Styles */
-.mosaic-split {
-    position: absolute;
-    z-index: 1;
-    touch-action: none;
-}
-
-.mosaic-split:hover .mosaic-split-line {
-    background: #e5e7eb; /* bg-gray-200 */
-}
-
-/* Split Line Styles */
-.mosaic-split .mosaic-split-line {
-    position: absolute;
-}
-
-.mosaic-split.-row {
-    margin-left: -3px;
-    width: 6px;
-    cursor: ew-resize;
-}
-
-.mosaic-split.-row .mosaic-split-line {
-    top: 0;
-    bottom: 0;
-    left: 3px;
-    right: 3px;
-}
-
-.mosaic-split.-column {
-    margin-top: -3px;
-    height: 6px;
-    cursor: ns-resize;
-}
-
-.mosaic-split.-column .mosaic-split-line {
-    top: 3px;
-    bottom: 3px;
-    left: 0;
-    right: 0;
 }

@@ -1,4 +1,4 @@
-import DEFAULT_LAYOUT from '@/Defaults/DefaultMosaicLayout.ts';
+import DEFAULT_LAYOUT from '@/defaults/DefaultMosaicLayout.ts';
 import { MosaicContextProps } from '@/context/MosaicContext.tsx';
 
 // TODO: Replace this with explanation tiles on how to use the app

@@ -1,87 +1,150 @@
-import { Mosaic, MosaicWindow } from 'react-mosaic-component';
-import 'react-mosaic-component/react-mosaic-component.css';
-import { ViewId } from '@/utils/types';
-import ZeroState from '@/components/mozaic/ZeroState.tsx';
-import { useMosaic } from '@/context/MosaicContext.tsx';
-import ContentComponentFactory from '@/utils/ContentComponentFactory.tsx';
-import { Button } from '@/components/ui/button.tsx';
-import { useFormDialog } from '@/context/FormDialogContext.tsx';
-
-import './custom-mosaic-styles.css';
+import { Mosaic, MosaicWindow } from "react-mosaic-component";
+import "react-mosaic-component/react-mosaic-component.css";
+import ZeroState from "@/components/mozaic/ZeroState.tsx";
+import { useMosaic } from "@/context/MosaicContext.tsx";
+import ContentComponentFactory from "@/utils/ContentComponentFactory.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { Settings2 } from "lucide-react";
+import { useFormDialog } from "@/context/FormDialogContext.tsx";
+// @ts-ignore
+import domtoimage from "dom-to-image-more";
+import "./custom-mosaic-styles.css";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.tsx';
-
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu.tsx";
+import { useEffect, useRef, useState } from "react";
+import { DevSettingsType } from "@/utils/types.ts";
 
 const Home = () => {
+    const tileRefs = useRef<{ [id: string]: HTMLElement | null }>({});
     const { layout, tiles, titles, removeTile, setLayout } = useMosaic();
-    const { openDialog } = useFormDialog();
-    // const context = useContext(MosaicWindowContext);
-    // const [toggleAdditionalControls, setToggleAdditionalControls] = useState(false);
+    const [devSettings, setDevSettings] = useState<DevSettingsType | null>(null);
+    const [tileDimensions, setTileDimensions] = useState<Record<string, { width: number; height: number }>>({});
 
-    const handleEditTileClick = (id: ViewId) => {
+    const { openDialog } = useFormDialog();
+
+    useEffect(() => {
+        const loadSettings = async () => {
+            const loadedDevSettings = await DevSettingsType.load();
+            setDevSettings(loadedDevSettings);
+        };
+
+        loadSettings();
+    }, []);
+
+    const handleEditTileClick = (id: string) => {
         openDialog(id);
     };
 
-    // const handleTogle = () => {
-    //     setToggleAdditionalControls(!toggleAdditionalControls);
-    // };
+    const handleCopyAsImageClick = (id: string) => {
+        /**
+         * TODO: fix the styling for the exportred image
+         */
+        const node = tileRefs.current[id];
+        if (node) {
+            domtoimage.toPng(node)
+                .then((dataUrl: any) => {
+                    const link = document.createElement("a");
+                    link.download = `${id}.png`;
+                    link.href = dataUrl;
+                    link.click();
+                })
+                .catch((error: any) => {
+                    console.error("Error generating image:", error);
+                });
+        } else {
+            console.error("No node found for id:", id);
+        }
+    };
 
-    const additionalControls = (
-        <div className="p-4 space-y-4">
-            <p className="text-gray-700">Additional Settings:</p>
-            <Button onClick={() => alert('Action 1')}>Action 1</Button>
-            <Button onClick={() => alert('Action 2')}>Action 2</Button>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="outline">More Options</Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem onSelect={() => alert('Option 1')}>Option 1</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => alert('Option 2')}>Option 2</DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-            {/*<Button variant="destructive" onClick={toggleAdditionalControls}>*/}
-            {/*    /!*TODO: fix this*!/*/}
-            {/*    Close*/}
-            {/*</Button>*/}
-        </div>
-    );
+    const handleResize = () => {
+        if (!tileRefs.current) return;
+
+        const newDimensions: Record<string, { width: number; height: number }> = {};
+
+        Object.entries(tileRefs.current).forEach(([id, node]) => {
+            if (node) {
+                const { clientWidth, clientHeight } = node;
+                newDimensions[id] = { width: clientWidth, height: clientHeight };
+            }
+        });
+
+        setTileDimensions(newDimensions);
+    };
+
+    useEffect(() => {
+        handleResize();
+    }, [layout]);
 
     return (
-        <div className="custom-layout-container min-h-screen w-full bg-gray-100 dark:bg-gray-900">
-            <Mosaic<ViewId>
-                className="min-h-screen bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 shadow-inner rounded-lg"
+        <div className="custom-layout-container min-h-screen w-full bg-gray-100 dark:bg-gray-900 rounded-lg">
+            <Mosaic<string>
+                className="min-h-screen bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 shadow-inner rounded-lg border-none"
                 value={layout}
-                onChange={(newLayout) => setLayout(newLayout)}
+                onChange={(newLayout) => {
+                    setLayout(newLayout);
+                    handleResize();
+                }}
                 renderTile={(id, path) => {
                     const settings = tiles[id];
                     const title = titles[id];
                     return (
-                        <MosaicWindow<ViewId>
+                        <MosaicWindow<string>
                             path={path}
-                            title={title || 'Untitled'}
+                            title={title || "Untitled"}
                             toolbarControls={
                                 <div className="mosaic-window-controls flex items-center space-x-2">
-                                    {/*<Button size="sm" onClick={handleTogle()}>*/}
-                                    {/*    Options*/}
-                                    {/*</Button>*/}
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                className="h-8 w-8 p-0 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+                                            >
+                                                <Settings2 className="h-4 w-4" />
+                                                <span className="sr-only">Open settings menu</span>
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="w-40 cursor-default">
+                                            {devSettings?.devMode && (
+                                                <DropdownMenuItem
+                                                    onSelect={() => handleCopyAsImageClick(id)}
+                                                    className="flex items-center cursor-pointer"
+                                                >
+                                                    <span>Copy as Image</span>
+                                                </DropdownMenuItem>
+                                            )}
+                                            <DropdownMenuItem
+                                                onSelect={() => handleEditTileClick(id)}
+                                                className="flex items-center cursor-pointer"
+                                            >
+                                                <span>Edit</span>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                onSelect={() => removeTile(id)}
+                                                className="flex items-center text-destructive focus:text-destructive cursor-pointer"
+                                            >
+                                                <span>Remove</span>
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
                             }
-                            additionalControls={additionalControls}
                         >
-                            <div className="p-4 flex flex-col h-full">
+                            <div className="p-4 flex flex-col h-full"
+                                 ref={(node) => {
+                                     tileRefs.current[id] = node;
+                                 }}>
                                 <div className="flex-1">
-                                    <ContentComponentFactory viewType={settings.viewType} api={settings.api} />
-                                </div>
-                                <div className="mt-4 flex space-x-2">
-                                    <Button variant="destructive" onClick={() => removeTile(id)}>
-                                        Remove
-                                    </Button>
-                                    <Button onClick={() => handleEditTileClick(id)}>Edit</Button>
+                                    <ContentComponentFactory
+                                        viewType={settings.viewType}
+                                        api={settings.api}
+                                        additionalSettings={settings.additionalSettings}
+                                        dimensions={tileDimensions[id]}
+                                    />
                                 </div>
                             </div>
                         </MosaicWindow>

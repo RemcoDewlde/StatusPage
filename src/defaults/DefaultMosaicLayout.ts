@@ -1,7 +1,6 @@
 import { MosaicNode } from 'react-mosaic-component';
-import { ViewId } from '@/utils/types.ts';
 
-const DEFAULT_LAYOUT: MosaicNode<ViewId> = {
+const DEFAULT_LAYOUT: MosaicNode<string> = {
     direction: 'row',
     first: 'tile1',
     second: {

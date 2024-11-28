@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "statuspage collector",
-    "version": "0.0.11"
+    "version": "0.1.0"
   },
   "tauri": {
     "allowlist": {
@@ -23,9 +23,9 @@
         "https://gist.githubusercontent.com/RemcoDewlde/2b878b3e42effa57334b9fa777626225/raw/Latest%2520JSON%2520Update"
       ],
       "dialog": true,
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQxMkIzMzY4NENEMUQyMjUKUldRbDB0Rk1hRE1yMFNKcjBxdlVWNFZRc2lBOGRhaFNtQnhXN1llOE85UzJ4SDU2c3l4TVZQU1MK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDQzNDExMzBDOTcwMjk3RDMKUldUVGx3S1hEQk5CUXcwaENybzFkdnJqcjY0UEhQRFFFdDFuRTAzV0w0ZVJ3QTBCbVZrZEplOXoK",
       "windows": {
-        "installMode": "passive"
+        "installMode": "basicUi"
       }
     },
     "windows": [

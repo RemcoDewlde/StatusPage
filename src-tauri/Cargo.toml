@@ -1,6 +1,6 @@
 [package]
 name = "statuspage-collector"
-version = "0.0.11"
+version = "0.1.0"
 description = "A statuspage app built with Tauri."
 authors = ["you"]
 edition = "2021"
