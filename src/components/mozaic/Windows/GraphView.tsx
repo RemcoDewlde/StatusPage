@@ -33,7 +33,6 @@ const chartConfig = {
 
 interface GraphViewProps {
     api: string;
-    chartType: string;
     additionalSettings?: Record<string, any>;
     dimensions?: { width: number; height: number };
 }
