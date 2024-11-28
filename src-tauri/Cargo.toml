@@ -1,6 +1,6 @@
 [package]
 name = "statuspage-collector"
-version = "0.1.0"
+version = "0.1.1"
 description = "A statuspage app built with Tauri."
 authors = ["you"]
 edition = "2021"
@@ -11,7 +11,7 @@ edition = "2021"
 tauri-build = { version = "1", features = [] }
 
 [dependencies]
-tauri = { version = "1", features = [ "api-all", "updater"] }
+tauri = { version = "1", features = ["api-all", "updater"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs" }
