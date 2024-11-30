@@ -34,12 +34,11 @@ users.
 - Platform-specific dependencies for Tauri (
   see [Tauri setup guide](https://tauri.app/v1/guides/getting-started/prerequisites))
 
-## Known issue's
-- MacOS installer / build results in `statuspage collector” is damaged and can’t be opened.`
 
-
-## 📋 Todo
-
-- [ ] Add several new tiles to show Data on the dashboard
-- [ ] Update the styling of the Mosaic tiles / layout
-- [ ] Fix the bundle/build for MacOS
+### 🛠️ Installation
+- In the Github release page, download the latest release for your platform.
+- Use the installer to install the application.
+  - Since the application is not signed, you may need to allow the installation in your system settings / Trust the application. 
+- Open the application and configure the settings to your liking.
+  - Since the application is not signed, you may need to allow the running of the application on your system in your system settings.
+- PageId's can be found on the <subdomain>.statuspage.io/api where examples are provided of api calls. There you can find the pageId's for your services.

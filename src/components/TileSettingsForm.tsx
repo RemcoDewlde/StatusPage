@@ -23,7 +23,8 @@ const fetchDevSettings = async () => {
     return loadedDevSettings ? loadedDevSettings.devMode : false;
 }
 
-const viewTypes = ['details', 'graph', 'summary'];
+// TODO: Implement 'details' is not included in the viewTypes array because it is not a valid view type at this point
+const viewTypes = ['graph', 'summary'];
 
 const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
 
@@ -52,7 +53,7 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
         fetchApiOptions().then(setApiOptions);
         fetchDevSettings().then((devMode) => {
             if (devMode) {
-                setViewTypeSetView([...viewTypes, 'dev']);
+                setViewTypeSetView([...viewTypes, 'dev', 'welcome']);
             }
         });
     }, []);
@@ -60,6 +61,8 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
 
     useEffect(() => {
         const fetchGroups = async () => {
+
+            console.log(formData)
             if (formData.api) {
                 try {
                     // Fetch data from the selected API
@@ -152,7 +155,7 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="bar">Bar Chart</SelectItem>
-                                <SelectItem value="line">Line Chart</SelectItem>
+                                {/*<SelectItem value="line">Line Chart</SelectItem>*/}
                                 <SelectItem value="pie">Pie Chart</SelectItem>
                             </SelectContent>
                         </Select>
@@ -231,7 +234,7 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
                         </SelectTrigger>
                         <SelectContent>
                             {apiOptions.map((api) => (
-                                <SelectItem key={api.pageId} value={api.pageId}>
+                                <SelectItem key={api.pageId} value={api.pageId} className="cursor-pointer">
                                     {api.name}
                                 </SelectItem>
                             ))}
@@ -249,7 +252,7 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
                         </SelectTrigger>
                         <SelectContent>
                             {viewTypeSettings.map((type) => (
-                                <SelectItem key={type} value={type}>
+                                <SelectItem key={type} value={type} className="cursor-pointer">
                                     {type.charAt(0).toUpperCase() + type.slice(1)}
                                 </SelectItem>
                             ))}

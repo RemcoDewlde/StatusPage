@@ -1,18 +1,12 @@
-import DEFAULT_LAYOUT from '@/defaults/DefaultMosaicLayout.ts';
 import { MosaicContextProps } from '@/context/MosaicContext.tsx';
 
-// TODO: Replace this with explanation tiles on how to use the app
 const initialState: MosaicContextProps = {
-    layout: DEFAULT_LAYOUT,
+    layout: "welcomeTile",
     tiles: {
-        tile1: { viewType: 'summary', api: '/api/summary', additionalSettings: {} },
-        tile2: { viewType: 'details', api: '/api/details', additionalSettings: {} },
-        tile3: { viewType: 'graph', api: '/api/graph', additionalSettings: {} },
+        welcomeTile: { viewType: 'welcome', api: '', additionalSettings: {} },
     },
     titles: {
-        tile1: 'Summary View',
-        tile2: 'Details View',
-        tile3: 'Graph View',
+        welcomeTile: 'Welcome view',
     },
     addTile: () => {
     },
