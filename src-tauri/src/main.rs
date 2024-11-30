@@ -18,7 +18,7 @@ impl serde::Serialize for CustomError {
 
 fn main() {
     let _ = fix_path_env::fix();
-    let mut builder = tauri::Builder::default();
+    let builder = tauri::Builder::default();
 
     #[cfg(debug_assertions)]
     {
