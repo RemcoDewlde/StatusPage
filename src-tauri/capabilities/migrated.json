@@ -1,0 +1,15 @@
+{
+  "identifier": "migrated",
+  "description": "permissions that were migrated from v1",
+  "local": true,
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "store:allow-load",
+    "store:allow-save",
+    "store:allow-set",
+    "store:allow-get"
+  ]
+}

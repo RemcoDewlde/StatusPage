@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { ToastType } from '../context/toastContext.tsx';
-import { Store } from 'tauri-plugin-store-api';
+import { load } from '@tauri-apps/plugin-store';
 import { typeRegistry } from './TypeRegistry.ts';
 
 export function RegisterType(target: any) {
@@ -15,7 +15,7 @@ export abstract class BaseSettingType {
         addToast?: (message: string, type: ToastType, closable?: boolean) => void,
     ): Promise<T | null> {
         const key = this.name.toLowerCase();
-        const store = new Store('.settings.dat');
+        const store = await load('store.json', { autoSave: true });
 
         try {
             const val = await store.get<{ value: any }>(key);
@@ -41,7 +41,7 @@ export abstract class BaseSettingType {
         addToast?: (message: string, type: ToastType, closable?: boolean) => void,
     ): Promise<void> {
         const key = this.name.toLowerCase();
-        const store = new Store('.settings.dat');
+        const store = await load('store.json', { autoSave: true });
 
         try {
             await store.set(key, { value: settings.toObject() });

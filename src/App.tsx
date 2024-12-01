@@ -3,9 +3,6 @@ import AppLayout from "./components/layout";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home";
 import Settings from "./pages/Settings";
-import { useEffect } from "react";
-import checkForUpdates from "./utils/updater.ts";
-
 
 const router = createBrowserRouter([
     {
@@ -25,11 +22,6 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
-
-    useEffect(() => {
-        checkForUpdates();
-    }, []);
-
 
     return (
         <RouterProvider router={router} />

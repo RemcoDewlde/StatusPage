@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { invoke } from '@tauri-apps/api/tauri';
+import { invoke } from '@tauri-apps/api/core';
 import { Command } from '@/enums/command.enum.ts';
 import { Link } from 'react-router-dom';
 import { ToastType, useToast } from '../../context/toastContext.tsx';

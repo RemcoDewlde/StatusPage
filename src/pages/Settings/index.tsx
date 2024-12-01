@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Github, Plus, Trash2 } from 'lucide-react';
 import { ToastType, useToast } from '@/context/toastContext.tsx';
 import { Input } from '@/components/ui/input';
-import { invoke } from '@tauri-apps/api/tauri';
+import { invoke } from '@tauri-apps/api/core';
 import { Command } from '@/enums/command.enum.ts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
 import { useRefresh } from '@/context/RefreshContext.tsx';

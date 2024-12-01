@@ -1,6 +1,6 @@
 import { ApiAction } from '../enums/apiActions.enum.ts';
 import { createContext, FunctionComponent, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
-import { invoke } from '@tauri-apps/api/tauri';
+import { invoke } from '@tauri-apps/api/core';
 import { StatusPageData } from '../interfaces/statusPageData.interface.ts';
 
 interface ApiContextType {

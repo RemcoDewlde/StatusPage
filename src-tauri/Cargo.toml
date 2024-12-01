@@ -1,6 +1,6 @@
 [package]
 name = "statuspage-collector"
-version = "0.1.3"
+version = "0.1.4"
 description = "A statuspage app built with Tauri."
 authors = ["you"]
 edition = "2021"
@@ -8,19 +8,20 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "1", features = ["api-all", "updater"] }
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs" }
-thiserror = "1.0.24"
-reqwest = "0.11.4"
-tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
-devtools = "0.3.3"
-
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive",] }
+reqwest = { version = "0.12.9", features = ["json"] }
+thiserror = "2.0.3"
+serde_json = "1.0.68"
+tauri-plugin-store = "2"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-updater = "2"
