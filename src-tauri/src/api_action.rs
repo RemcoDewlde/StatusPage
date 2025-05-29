@@ -15,32 +15,21 @@ impl ApiAction {
         }
     }
 
-    pub fn to_url(&self, page_id: &String) -> String {
+    pub fn to_url(&self, domain: &String, is_custom_domain: bool) -> String {
+        let base = if is_custom_domain {
+            domain.clone()
+        } else {
+            format!("{}.statuspage.io", domain)
+        };
         match self {
-            ApiAction::Summary => format!("https://{}.statuspage.io/api/v2/summary.json", page_id),
-            ApiAction::Status => format!("https://{}.statuspage.io/api/v2/status.json", page_id),
-            ApiAction::Components => {
-                format!("https://{}.statuspage.io/api/v2/components.json", page_id)
-            }
-            ApiAction::UnresolvedIncidents => format!(
-                "https://{}.statuspage.io/api/v2/incidents/unresolved.json",
-                page_id
-            ),
-            ApiAction::AllIncidents => {
-                format!("https://{}.statuspage.io/api/v2/incidents.json", page_id)
-            }
-            ApiAction::UpcomingMaintenances => format!(
-                "https://{}.statuspage.io/api/v2/scheduled-maintenances/upcoming.json",
-                page_id
-            ),
-            ApiAction::ActiveMaintenances => format!(
-                "https://{}.statuspage.io/api/v2/scheduled-maintenances/active.json",
-                page_id
-            ),
-            ApiAction::AllMaintenances => format!(
-                "https://{}.statuspage.io/api/v2/scheduled-maintenances.json",
-                page_id
-            ),
+            ApiAction::Summary => format!("https://{}/api/v2/summary.json", base),
+            ApiAction::Status => format!("https://{}/api/v2/status.json", base),
+            ApiAction::Components => format!("https://{}/api/v2/components.json", base),
+            ApiAction::UnresolvedIncidents => format!("https://{}/api/v2/incidents/unresolved.json", base),
+            ApiAction::AllIncidents => format!("https://{}/api/v2/incidents.json", base),
+            ApiAction::UpcomingMaintenances => format!("https://{}/api/v2/scheduled-maintenances/upcoming.json", base),
+            ApiAction::ActiveMaintenances => format!("https://{}/api/v2/scheduled-maintenances/active.json", base),
+            ApiAction::AllMaintenances => format!("https://{}/api/v2/scheduled-maintenances.json", base),
         }
     }
 }

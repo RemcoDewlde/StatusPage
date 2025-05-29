@@ -10,11 +10,13 @@ import { Command } from '@/enums/command.enum.ts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
 import { useRefresh } from '@/context/RefreshContext.tsx';
 import { Switch } from '@/components/ui/switch.tsx';
+import { useApiSettingsStore } from '@/store/apiSettingsStore';
 
 export default function Settings() {
     const [settings, setSettings] = useState<PageSetting[]>([]);
     const [newPageId, setNewPageId] = useState('');
     const [newName, setNewName] = useState('');
+    const [newIsCustomDomain, setNewIsCustomDomain] = useState(false);
     const [version, setVersion] = useState('dev');
     const [isDevMode, setIsDevMode] = useState(false);
     const { refreshInterval, setRefreshInterval } = useRefresh();
@@ -27,15 +29,6 @@ export default function Settings() {
     }, [refreshInterval]);
 
     useEffect(() => {
-        const fetchSettings = async () => {
-            const loadedSettings = await PageSettingType.load((message: string) =>
-                addToast(message, ToastType.Info, true),
-            );
-            if (loadedSettings) {
-                setSettings(loadedSettings.settings);
-            }
-        };
-
         const fetchDevSettings = async () => {
             const loadedDevSettings = await DevSettingsType.load((message: string) =>
                 addToast(message, ToastType.Info, true),
@@ -45,7 +38,7 @@ export default function Settings() {
             }
         };
 
-        fetchSettings();
+        setSettings(useApiSettingsStore.getState().settings);
         fetchDevSettings();
     }, [addToast]);
 
@@ -65,11 +58,12 @@ export default function Settings() {
         await PageSettingType.save(newSettings, (message: string) =>
             addToast(message, ToastType.Info, true),
         );
+        useApiSettingsStore.getState().setSettings(newSettings.settings);
     };
 
-    const updateSetting = (pageId: string, name: string) => {
+    const updateSetting = (pageId: string, name: string, isCustomDomain?: boolean) => {
         const updatedSettings = settings.map((setting) =>
-            setting.pageId === pageId ? { ...setting, name } : setting,
+            setting.pageId === pageId ? { ...setting, name, isCustomDomain: isCustomDomain ?? setting.isCustomDomain } : setting,
         );
         setSettings(updatedSettings);
     };
@@ -91,12 +85,14 @@ export default function Settings() {
 
     const addSetting = async () => {
         if (newPageId && newName) {
-            const newSettingsArray = [...settings, { pageId: newPageId, name: newName }];
+            const newSettingsArray = [...settings, { pageId: newPageId, name: newName, isCustomDomain: newIsCustomDomain }];
             const newSettings = new PageSettingType(newSettingsArray);
             setSettings(newSettingsArray);
+            useApiSettingsStore.getState().setSettings(newSettingsArray);
             await saveSettings(newSettings);
             setNewPageId('');
             setNewName('');
+            setNewIsCustomDomain(false);
         }
     };
 
@@ -104,6 +100,7 @@ export default function Settings() {
         const filteredSettings = settings.filter((setting) => setting.pageId !== pageId);
         const newSettings = new PageSettingType(filteredSettings);
         setSettings(filteredSettings);
+        useApiSettingsStore.getState().setSettings(filteredSettings);
         await saveSettings(newSettings);
     };
 
@@ -120,7 +117,6 @@ export default function Settings() {
 
     return (
         <div>
-            {/* Saved statusPages */}
             <Card className="w-full max-w-4xl mx-auto my-4">
                 <CardHeader>
                     <CardTitle>Saved StatusPages</CardTitle>
@@ -132,15 +128,22 @@ export default function Settings() {
                                 type="text"
                                 value={setting.pageId}
                                 readOnly
-                                className="w-1/3"
+                                className="w-1/4"
                             />
                             <Input
                                 type="text"
                                 value={setting.name}
                                 readOnly
-                                onChange={(e) => updateSetting(setting.pageId, e.target.value)}
-                                className="w-1/3"
+                                onChange={(e) => updateSetting(setting.pageId, e.target.value, setting.isCustomDomain)}
+                                className="w-1/4"
                             />
+                            <div className="flex items-center space-x-2">
+                                <Switch
+                                    checked={!!setting.isCustomDomain}
+                                    onCheckedChange={(checked) => updateSetting(setting.pageId, setting.name, checked)}
+                                />
+                                <span className="text-xs">Custom Domain</span>
+                            </div>
                             <Button
                                 variant="destructive"
                                 size="icon"
@@ -153,18 +156,25 @@ export default function Settings() {
                     <div className="flex items-center space-x-4 mt-6">
                         <Input
                             type="text"
-                            placeholder="Page ID"
+                            placeholder="Page ID or Domain"
                             value={newPageId}
                             onChange={(e) => setNewPageId(e.target.value)}
-                            className="w-1/3"
+                            className="w-1/4"
                         />
                         <Input
                             type="text"
                             placeholder="Name"
                             value={newName}
                             onChange={(e) => setNewName(e.target.value)}
-                            className="w-1/3"
+                            className="w-1/4"
                         />
+                        <div className="flex items-center space-x-2">
+                            <Switch
+                                checked={newIsCustomDomain}
+                                onCheckedChange={setNewIsCustomDomain}
+                            />
+                            <span className="text-xs">Custom Domain</span>
+                        </div>
                         <Button onClick={addSetting}>
                             <Plus className="h-4 w-4 mr-2" />
                             Add Setting
@@ -173,7 +183,6 @@ export default function Settings() {
                 </CardContent>
             </Card>
 
-            {/* Interval settings for refresh api calls */}
             <Card className="w-full max-w-4xl mx-auto my-4">
                 <CardHeader>
                     <CardTitle>Global Update Interval</CardTitle>

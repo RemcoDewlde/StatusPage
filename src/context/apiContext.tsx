@@ -1,7 +1,16 @@
 import { ApiAction } from '../enums/apiActions.enum.ts';
-import { createContext, FunctionComponent, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
+import {
+    createContext,
+    FunctionComponent,
+    ReactNode,
+    useCallback,
+    useContext,
+    useMemo,
+    useState,
+} from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { StatusPageData } from '../interfaces/statusPageData.interface.ts';
+import { useApiSettingsStore } from '../store/apiSettingsStore';
 
 interface ApiContextType {
     fetchStatusPageData: (pageId: string, action: ApiAction) => Promise<StatusPageData>;
@@ -17,10 +26,13 @@ const ApiProvider: FunctionComponent<{ children: ReactNode }> = ({ children }) =
 
     const fetchStatusPageDataById = useCallback(async (page_id: string, action: ApiAction): Promise<StatusPageData> => {
         try {
-            const data = await invoke<StatusPageData>('fetch_statuspage_data', {
+            const pageSetting = useApiSettingsStore.getState().getSettingById(page_id);
+            const invokeArgs: Record<string, any> = {
                 pageId: page_id,
                 action: action.toString(),
-            });
+                isCustomDomain:  pageSetting?.isCustomDomain ?? false,
+            };
+            const data = await invoke<StatusPageData>('fetch_statuspage_data', invokeArgs);
             setStatusPageData(data);
             return data;
         } catch (error) {

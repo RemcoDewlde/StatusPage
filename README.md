@@ -21,8 +21,8 @@ users.
 - 🔧 Easy configuration and setup
 - 📱 Fully responsive designs
 - 🚀 Built with modern technologies
-- 🔒 Secure and scalable
 - 🖥️ Cross-platform desktop application (Windows, macOS, Linux)
+- 🛃 Supports Statuspage.io with custom domains
 
 ## 🚀 Getting Started
 

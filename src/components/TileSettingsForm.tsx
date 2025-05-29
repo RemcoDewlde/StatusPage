@@ -84,8 +84,6 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
                     // Now create the groupList
                     const groupList = Array.from(groupMap.entries()).map(([id, name]) => ({ id, name }));
 
-                    console.log('groupList', groupList);
-
                     setGroups(groupList);
                     setHasGroups(groupList.length > 0);
                 } catch (error) {

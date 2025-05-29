@@ -5,6 +5,7 @@ import type { MosaicNode as OriginalMosaicNode } from 'react-mosaic-component';
 export interface PageSetting {
     pageId: string;
     name: string;
+    isCustomDomain?: boolean;
 }
 
 export type TileSettings = {
@@ -90,4 +91,5 @@ export class DevSettingsType extends BaseSettingType {
         };
     }
 }
+
 

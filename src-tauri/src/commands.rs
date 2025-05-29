@@ -17,9 +17,10 @@ pub fn get_application_name() -> String {
 pub async fn fetch_statuspage_data(
     page_id: String,
     action: String,
+    is_custom_domain: Option<bool>,
 ) -> Result<ApiResponse, CustomError> {
     let api_action = ApiAction::from_str(&action)?;
-    let url = api_action.to_url(&page_id);
+    let url = api_action.to_url(&page_id, is_custom_domain.unwrap_or(false));
     let client = build_client()?;
     let response = client.get(&url).send().await?;
     let data = response.json::<ApiResponse>().await?;
