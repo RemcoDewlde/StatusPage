@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area.tsx";
-import { ApiAction, useApi } from "@/context/apiContext.tsx";
+import { useStatusPageStore } from "@/store/statusPageStore";
 import { StatusPageData } from "@/interfaces/statusPageData.interface.ts";
-import { useRefresh } from "@/context/RefreshContext.tsx";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import StatusPageIcon from "@/utils/StatusIcon.tsx";
 import { Component } from "@/interfaces/component.interface.ts";
-
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 interface SummaryViewProps {
     api: string;
@@ -29,11 +27,12 @@ const sortComponentsByGroup = (data: StatusPageData) => {
 };
 
 export const SummaryView = ({ api, additionalSettings }: SummaryViewProps) => {
-    const [data, setData] = useState<StatusPageData | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const { fetchStatusPageData } = useApi();
-    const { refreshSignal } = useRefresh();
-    const [groupedComponents, setGroupedComponents] = useState<{ [key: string]: Component[]; }>({});
+    const data = useStatusPageStore((state) => state.data[api] || null);
+    const isLoading = useStatusPageStore((state) => state.isLoading[api] || false);
+    const error = useStatusPageStore((state) => state.error[api] || null);
+    const fetchStatusPage = useStatusPageStore((state) => state.fetchStatusPage);
+
+    const [groupedComponents, setGroupedComponents] = useState<{ [key: string]: Component[] }>({});
     const [groupMap, setGroupMap] = useState<{ [key: string]: Component }>({});
 
     const showOneGroup = additionalSettings?.showOneGroup;
@@ -41,50 +40,35 @@ export const SummaryView = ({ api, additionalSettings }: SummaryViewProps) => {
     const showInGroups = additionalSettings?.showInGroups;
 
     useEffect(() => {
-        let pollingTimeout: NodeJS.Timeout;
-
-        const loadData = async () => {
-            if (api === "/api/summary" || !api || api.trim() === "") {
-                pollingTimeout = setTimeout(loadData, 500);
-                return;
-            }
-
-            try {
-                setIsLoading(true);
-                const data = await fetchStatusPageData(api, ApiAction.Components);
-                setData(data);
-
-                const newGroupMap: { [key: string]: Component } = {};
-                data.components.forEach((component) => {
-                    if (component.group && component.id) {
-                        newGroupMap[component.id] = component;
-                    }
-                });
-                setGroupMap(newGroupMap);
-
-                // Group components
-                const groups = sortComponentsByGroup(data);
-                setGroupedComponents(groups);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        loadData();
-
-        return () => {
-            if (pollingTimeout) {
-                clearTimeout(pollingTimeout);
-            }
-        };
-    }, [api, fetchStatusPageData, refreshSignal]);
+        if (!api || api === "/api/summary" || api.trim() === "") return;
+        if (data) {
+            // Group components
+            const newGroupMap: { [key: string]: Component } = {};
+            data.components.forEach((component) => {
+                if (component.group && component.id) {
+                    newGroupMap[component.id] = component;
+                }
+            });
+            setGroupMap(newGroupMap);
+            setGroupedComponents(sortComponentsByGroup(data));
+        } else {
+            // If no data, try to fetch it
+            fetchStatusPage(api);
+        }
+    }, [api, data, fetchStatusPage]);
 
     if (!data || isLoading) {
         return (
             <div className="h-full w-full flex items-center justify-center">
                 <span className="text-gray-500">Loading...</span>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="h-full w-full flex items-center justify-center">
+                <span className="text-red-500">{error}</span>
             </div>
         );
     }
@@ -112,7 +96,7 @@ export const SummaryView = ({ api, additionalSettings }: SummaryViewProps) => {
                                                 >
                                                     <div className="flex items-center">
                                                         <StatusPageIcon status={component.status} />
-                                                        <span className="ml-2 text-sm text-gray-900">
+                                                        <span className="ml-2 text-sm text-gray-900">s
                                                                     {component.name}
                                                                 </span>
                                                     </div>

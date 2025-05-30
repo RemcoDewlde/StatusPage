@@ -1,7 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { ApiAction, useApi } from "@/context/apiContext.tsx";
-import { useRefresh } from "@/context/RefreshContext.tsx";
-import { StatusPageData } from "@/interfaces/statusPageData.interface.ts";
+import { useEffect, useMemo, useRef } from "react";
+import { useStatusPageStore } from "@/store/statusPageStore";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart.tsx";
 import { GraphFactory } from "@/components/mozaic/Windows/Graphs/GraphFactory.tsx";
 
@@ -38,31 +36,20 @@ interface GraphViewProps {
 }
 
 export const GraphView = ({ api, additionalSettings, dimensions }: GraphViewProps) => {
-    const [data, setData] = useState<StatusPageData | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const { fetchStatusPageData } = useApi();
-    const { refreshSignal } = useRefresh();
+    const data = useStatusPageStore((state) => state.data[api] || null);
+    const isLoading = useStatusPageStore((state) => state.isLoading[api] || false);
+    const error = useStatusPageStore((state) => state.error[api] || null);
+    const fetchStatusPage = useStatusPageStore((state) => state.fetchStatusPage);
+    const hasAnimated = useRef(false);
 
     const width = (dimensions?.width || 1) - 40;
     const height = (dimensions?.height || 1) - 40;
 
     useEffect(() => {
-        const loadData = async () => {
-            if (!api || api.trim() === "" || api === "/api/summary") return;
-
-            setIsLoading(true);
-            try {
-                const fetchedData = await fetchStatusPageData(api, ApiAction.Components);
-                setData(fetchedData);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        loadData();
-    }, [api, fetchStatusPageData, refreshSignal]);
+        if (!api || api.trim() === "" || api === "/api/summary") return;
+        if (!data) fetchStatusPage(api);
+        if (!hasAnimated.current) hasAnimated.current = true;
+    }, [api, data, fetchStatusPage]);
 
     const chartData = useMemo(() => {
         if (!data) return [];
@@ -84,6 +71,14 @@ export const GraphView = ({ api, additionalSettings, dimensions }: GraphViewProp
         return (
             <div className="h-full w-full flex items-center justify-center">
                 <span className="text-gray-500">Loading...</span>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="h-full w-full flex items-center justify-center">
+                <span className="text-red-500">{error}</span>
             </div>
         );
     }

@@ -17,7 +17,7 @@ const ContentComponentFactory: FC<FactoryProps> = ({ viewType, api, additionalSe
         summary: <SummaryView api={api} additionalSettings={additionalSettings} />,
         details: <DetailsView api={api} />,
         graph: <GraphView api={api} additionalSettings={additionalSettings} dimensions={dimensions} />,
-        dev: <DevView api={api} />,
+        dev: <DevView />,
         welcome: <WelcomeView />
     };
 
