@@ -1,12 +1,13 @@
 {
   "name": "statuspage-collector",
   "private": true,
-  "version": "0.1.6",
+  "version": "0.1.9",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "sync-version": "node sync-version.js"
   },
   "dependencies": {
     "@blueprintjs/core": "^5.12.0",
