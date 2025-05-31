@@ -9,14 +9,14 @@ export interface MosaicContextProps {
     tiles: Record<string, TileSettings>;
     titles: Record<string, string>;
     addTile: (settings: TileSettings, title?: string) => void;
-    updateTile: (id: string, settings: TileSettings) => void;
+    updateTile: (id: string, settings: TileSettings, title?: string) => void;
     removeTile: (id: string) => void;
     setLayout: (layout: MosaicNode<string> | null) => void;
 }
 
 type Action =
     | { type: 'ADD_TILE'; payload: { settings: TileSettings; title?: string } }
-    | { type: 'UPDATE_TILE'; payload: { id: string; settings: TileSettings } }
+    | { type: 'UPDATE_TILE'; payload: { id: string; settings: TileSettings; title?: string } }
     | { type: 'REMOVE_TILE'; payload: { id: string } }
     | {
     type: 'SET_LAYOUT'; payload: {
@@ -61,11 +61,12 @@ const mosaicReducer = (
             };
         }
         case 'UPDATE_TILE': {
-            const { id, settings } = action.payload;
+            const { id, settings, title } = action.payload;
             if (!state.tiles[id]) return state;
             return {
                 ...state,
                 tiles: { ...state.tiles, [id]: settings },
+                titles: title !== undefined ? { ...state.titles, [id]: title } : state.titles,
             };
         }
         case 'REMOVE_TILE': {
@@ -191,8 +192,8 @@ export const MosaicProvider: FC<MosaicProviderProps> = ({ children }) => {
         dispatch({ type: 'ADD_TILE', payload: { settings, title } });
     };
 
-    const updateTile = (id: string, settings: TileSettings) => {
-        dispatch({ type: 'UPDATE_TILE', payload: { id, settings } });
+    const updateTile = (id: string, settings: TileSettings, title?: string) => {
+        dispatch({ type: 'UPDATE_TILE', payload: { id, settings, title } });
     };
 
     const removeTile = (id: string) => {

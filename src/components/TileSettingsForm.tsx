@@ -33,18 +33,21 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
     const [groups, setGroups] = useState<{ id: string; name: string }[]>([]);
     const [hasGroups, setHasGroups] = useState<boolean>(false);
 
-    const { tiles, addTile, updateTile } = useMosaic();
+    const { tiles, titles, addTile, updateTile } = useMosaic();
     const initialSettings = tileId ? tiles[tileId] : {
         viewType: '',
         api: '',
         additionalSettings: {},
     };
 
+    const initialTitle = tileId && titles[tileId] ? titles[tileId] : '';
     const [formData, setFormData] = useState({
         viewType: initialSettings.viewType || '',
         api: initialSettings.api || '',
         additionalSettings: initialSettings.additionalSettings || {},
+        title: initialTitle,
     });
+    const [titleManuallyEdited, setTitleManuallyEdited] = useState(false);
 
     const [apiOptions, setApiOptions] = useState<{ pageId: string; name: string }[]>([]);
     const [viewTypeSettings, setViewTypeSetView] = useState<string[]>(viewTypes);
@@ -58,11 +61,20 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
         });
     }, []);
 
+    // Auto-generate title when API or viewType changes, unless manually edited
+    useEffect(() => {
+        if (!titleManuallyEdited) {
+            let apiName = apiOptions.find(option => option.pageId === formData.api)?.name || '';
+            let newTitle = apiName && formData.viewType ? `${apiName} - ${formData.viewType}` : '';
+            if (formData.additionalSettings.chartType) {
+                newTitle += ` - ${formData.additionalSettings.chartType}`;
+            }
+            setFormData(prev => ({ ...prev, title: newTitle }));
+        }
+    }, [formData.api, formData.viewType, formData.additionalSettings.chartType, apiOptions, titleManuallyEdited]);
 
     useEffect(() => {
         const fetchGroups = async () => {
-
-            console.log(formData)
             if (formData.api) {
                 try {
                     // Fetch data from the selected API
@@ -101,15 +113,11 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        const { title, ...tileSettings } = formData;
         if (tileId) {
-            updateTile(tileId, formData);
+            updateTile(tileId, tileSettings, title);
         } else {
-            let apiName = apiOptions.find(option => option.pageId === formData.api);
-            let title = `${apiName?.name} - ${formData.viewType}`
-            if (formData.additionalSettings.chartType) {
-                title += ` - ${formData.additionalSettings.chartType}`;
-            }
-            addTile(formData, title);
+            addTile(tileSettings, title);
         }
         onClose();
     };
@@ -221,6 +229,18 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
     return (
         <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Title</label>
+                    <Input
+                        type="text"
+                        value={formData.title}
+                        onChange={e => {
+                            setFormData({ ...formData, title: e.target.value });
+                            setTitleManuallyEdited(true);
+                        }}
+                        placeholder="Enter tile title"
+                    />
+                </div>
                 <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">API</label>
                     <Select
