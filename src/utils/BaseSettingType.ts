@@ -30,7 +30,8 @@ export abstract class BaseSettingType {
                 Object.assign(instance, allSettings[key]);
                 return instance;
             } else {
-                addToast?.('No settings found', ToastType.Warning, true);
+                // addToast?.('No settings found', ToastType.Warning, true);
+                console.warn(`No settings found for ${key}`);
                 return null;
             }
         } catch (error) {

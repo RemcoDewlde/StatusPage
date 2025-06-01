@@ -13,6 +13,18 @@ interface TileFormProps {
     tileId?: string;
 }
 
+// Define a type for additionalSettings
+interface AdditionalSettings {
+    [key: string]: any;
+}
+
+interface FormDataType {
+    viewType: string;
+    api: string;
+    additionalSettings: AdditionalSettings;
+    title: string;
+}
+
 const fetchApiOptions = async () => {
     const loadedSettings = await PageSettingType.load();
     return loadedSettings ? loadedSettings.settings : [];
@@ -29,7 +41,6 @@ const viewTypes = ['graph', 'summary'];
 const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
 
     const { fetchStatusPageData } = useApi();
-    // New state variables
     const [groups, setGroups] = useState<{ id: string; name: string }[]>([]);
     const [hasGroups, setHasGroups] = useState<boolean>(false);
 
@@ -38,13 +49,14 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
         viewType: '',
         api: '',
         additionalSettings: {},
+        configNeeded: false,
     };
 
     const initialTitle = tileId && titles[tileId] ? titles[tileId] : '';
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<FormDataType>({
         viewType: initialSettings.viewType || '',
         api: initialSettings.api || '',
-        additionalSettings: initialSettings.additionalSettings || {},
+        additionalSettings: (initialSettings.additionalSettings as AdditionalSettings) || {},
         title: initialTitle,
     });
     const [titleManuallyEdited, setTitleManuallyEdited] = useState(false);
@@ -114,10 +126,12 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const { title, ...tileSettings } = formData;
+        // Add configNeeded for TileSettings type
+        const tileSettingsWithConfig = { ...tileSettings, configNeeded: initialSettings.configNeeded ?? false };
         if (tileId) {
-            updateTile(tileId, tileSettings, title);
+            updateTile(tileId, tileSettingsWithConfig, title);
         } else {
-            addTile(tileSettings, title);
+            addTile(tileSettingsWithConfig, title);
         }
         onClose();
     };

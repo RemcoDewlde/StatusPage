@@ -2,9 +2,10 @@ import { ElementType, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../../../@/lib/utils.ts';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronRight, Home, Menu, ClipboardPlus, Settings } from 'lucide-react';
+import { ChevronDown, ChevronRight, Home, Menu, ClipboardPlus, Settings, Plus } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useFormDialog } from '@/context/FormDialogContext';
+import { useMosaicDrawer } from '@/context/MosaicDrawerContext';
 
 interface SidebarItemProps {
     icon: ElementType;
@@ -100,9 +101,11 @@ const SidebarItem = ({ icon: Icon, label, path, onClick, children, isCollapsed }
 const Sidebar = () => {
     const [isCollapsed, setIsCollapsed] = useState(true);
     const { openDialog } = useFormDialog();
+    const { setDrawerOpen } = useMosaicDrawer();
 
     const sidebarItems = [
         { icon: Home, label: 'Dashboard', path: '/' },
+        { icon: Plus, label: 'Add View', onClick: () => setDrawerOpen(true) },
         { icon: ClipboardPlus, label: 'Add Status Tile', onClick: () => openDialog() },
         { icon: Settings, label: 'Settings', path: '/settings' },
     ];
@@ -149,3 +152,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+

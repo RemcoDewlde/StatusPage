@@ -1,32 +1,39 @@
-import "./App.css";
-import AppLayout from "./components/layout";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Home from "./pages/Home";
-import Settings from "./pages/Settings";
-import { useEffect } from "react";
-import { PageSettingType } from "./utils/types";
-import { useApiSettingsStore } from "./store/apiSettingsStore";
-import { ToastType, useToast } from "./context/toastContext";
+import './App.css';
+import AppLayout from './components/layout';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import Home from './pages/Home';
+import Settings from './pages/Settings';
+import { useEffect } from 'react';
+import { PageSettingType } from './utils/types';
+import { useApiSettingsStore } from './store/apiSettingsStore';
+import { ToastType, useToast } from './context/toastContext';
+import { DndProvider } from 'react-dnd';
+import { MosaicDrawerProvider } from './context/MosaicDrawerContext';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+
 
 const router = createBrowserRouter([
     {
-        path: "/",
+        path: '/',
         element: <AppLayout />,
         children: [
             {
                 index: true,
-                element: <Home />
+                element: <Home />,
             },
             {
-                path: "settings",
-                element: <Settings />
-            }
-        ]
-    }
+                path: 'settings',
+                element: <Settings />,
+            },
+        ],
+    },
 ]);
 
 const App = () => {
-    const { addToast } = useToast ? useToast() : { addToast: () => {} };
+    const { addToast } = useToast ? useToast() : {
+        addToast: () => {
+        },
+    };
     useEffect(() => {
         const loadSettings = async () => {
             const loadedSettings = await PageSettingType.load((message: string) =>
@@ -40,7 +47,11 @@ const App = () => {
     }, []);
 
     return (
-        <RouterProvider router={router} />
+        <DndProvider backend={HTML5Backend}>
+            <MosaicDrawerProvider>
+                <RouterProvider router={router} />
+            </MosaicDrawerProvider>
+        </DndProvider>
     );
 };
 

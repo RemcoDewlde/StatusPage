@@ -11,6 +11,7 @@ export interface PageSetting {
 export type TileSettings = {
     api: string;
     viewType: string;
+    configNeeded: boolean;
     additionalSettings: Record<string, any>;
 };
 
