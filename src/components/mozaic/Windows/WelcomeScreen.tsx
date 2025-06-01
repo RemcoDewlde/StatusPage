@@ -26,7 +26,7 @@ export function WelcomeView() {
                                 StatusPage is a modern, customizable status page application that allows you to create beautiful and responsive status pages for your services. It provides real-time updates to your users and is built with cutting-edge technologies.
                             </p>
                             <div className="mt-4">
-                                <img src="https://github.com/user-attachments/assets/9fb74b23-eae3-4e90-863c-097e64aa507f" alt="StatusPage Screenshot" className="w-full rounded-lg shadow-md" />
+                                <img src="src/assets/welcome.png" alt="StatusPage Screenshot" className="w-full rounded-lg shadow-md" />
                             </div>
                         </TabsContent>
                         <TabsContent value="features" className="mt-6">

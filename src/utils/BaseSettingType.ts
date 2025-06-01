@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { ToastType } from '../context/toastContext.tsx';
-import { load } from '@tauri-apps/plugin-store';
+import { BaseDirectory, exists, readTextFile, writeFile } from '@tauri-apps/plugin-fs';
 import { typeRegistry } from './TypeRegistry.ts';
 
 export function RegisterType(target: any) {
@@ -9,19 +9,25 @@ export function RegisterType(target: any) {
 }
 
 export abstract class BaseSettingType {
-    // * @param addToast: A function to add a toast message (Optional).
+    static settingsFile = 'settings.json';
+    static settingsDirectory = BaseDirectory.AppData;
+
     static async load<T extends BaseSettingType>(
         this: new () => T,
         addToast?: (message: string, type: ToastType, closable?: boolean) => void,
     ): Promise<T | null> {
         const key = this.name.toLowerCase();
-        const store = await load('store.json', { autoSave: true });
-
         try {
-            const val = await store.get<{ value: any }>(key);
-            if (val) {
+            const fileExists = await exists(BaseSettingType.settingsFile, { baseDir: BaseDirectory.AppConfig});
+            if (!fileExists) {
+                addToast?.('No settings file found', ToastType.Warning, true);
+                return null;
+            }
+            const fileContent = await readTextFile(BaseSettingType.settingsFile, { baseDir: BaseSettingType.settingsDirectory });
+            const allSettings = JSON.parse(fileContent || '{}');
+            if (allSettings[key]) {
                 const instance = new this();
-                Object.assign(instance, val.value);
+                Object.assign(instance, allSettings[key]);
                 return instance;
             } else {
                 addToast?.('No settings found', ToastType.Warning, true);
@@ -33,33 +39,33 @@ export abstract class BaseSettingType {
         }
     }
 
-    // * Purpose: Load the settings from the store.
-    // * @param addToast: A function to add a toast message (Optional).
     static async save<T extends BaseSettingType>(
         this: new () => T,
         settings: T,
         addToast?: (message: string, type: ToastType, closable?: boolean) => void,
     ): Promise<void> {
         const key = this.name.toLowerCase();
-        const store = await load('store.json', { autoSave: true });
-
         try {
-            await store.set(key, { value: settings.toObject() });
-            await store.save();
-            const val = await store.get<{ value: any }>(key);
-
-            if (val) {
-                addToast?.('Saved', ToastType.Success, true);
-            } else {
-                addToast?.('Something went wrong', ToastType.Warning, true);
+            let allSettings: Record<string, any> = {};
+            const fileExists = await exists(BaseSettingType.settingsFile, { baseDir: BaseSettingType.settingsDirectory });
+            if (fileExists) {
+                try {
+                    const fileContent = await readTextFile(BaseSettingType.settingsFile, { baseDir: BaseSettingType.settingsDirectory });
+                    allSettings = JSON.parse(fileContent || '{}');
+                } catch {}
             }
+            allSettings[key] = settings.toObject();
+            await writeFile(
+                BaseSettingType.settingsFile,
+                new TextEncoder().encode(JSON.stringify(allSettings, null, 2)),
+                { baseDir: BaseSettingType.settingsDirectory }
+            );
+            addToast?.('Saved', ToastType.Success, true);
         } catch (error) {
             console.error('Error saving settings:', error);
             addToast?.('Error saving settings', ToastType.Error, true);
         }
     }
 
-    // * Purpose: Save the settings to the store.
-    // * @param settings: The settings to save.
     abstract toObject(): object;
 }

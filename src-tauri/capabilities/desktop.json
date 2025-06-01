@@ -14,6 +14,20 @@
     "store:allow-save",
     "store:allow-set",
     "store:allow-get",
-    "shell:allow-open"
+    "shell:allow-open",
+    "fs:default",
+    "fs:read-all",
+    "fs:write-all",
+    "fs:allow-rename",
+    "fs:allow-mkdir",
+    "fs:allow-exists",
+    "fs:allow-watch",
+    "fs:read-dirs",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        "**/*"
+      ]
+    }
   ]
 }

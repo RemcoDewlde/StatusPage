@@ -25,11 +25,20 @@ impl ApiAction {
             ApiAction::Summary => format!("https://{}/api/v2/summary.json", base),
             ApiAction::Status => format!("https://{}/api/v2/status.json", base),
             ApiAction::Components => format!("https://{}/api/v2/components.json", base),
-            ApiAction::UnresolvedIncidents => format!("https://{}/api/v2/incidents/unresolved.json", base),
+            ApiAction::UnresolvedIncidents => {
+                format!("https://{}/api/v2/incidents/unresolved.json", base)
+            }
             ApiAction::AllIncidents => format!("https://{}/api/v2/incidents.json", base),
-            ApiAction::UpcomingMaintenances => format!("https://{}/api/v2/scheduled-maintenances/upcoming.json", base),
-            ApiAction::ActiveMaintenances => format!("https://{}/api/v2/scheduled-maintenances/active.json", base),
-            ApiAction::AllMaintenances => format!("https://{}/api/v2/scheduled-maintenances.json", base),
+            ApiAction::UpcomingMaintenances => format!(
+                "https://{}/api/v2/scheduled-maintenances/upcoming.json",
+                base
+            ),
+            ApiAction::ActiveMaintenances => {
+                format!("https://{}/api/v2/scheduled-maintenances/active.json", base)
+            }
+            ApiAction::AllMaintenances => {
+                format!("https://{}/api/v2/scheduled-maintenances.json", base)
+            }
         }
     }
 }
