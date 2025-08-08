@@ -1,10 +1,10 @@
-import { useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useStatusPageStore } from '@/store/statusPageStore';
 import { useApiSettingsStore } from '@/store/apiSettingsStore';
 import { useMosaic } from '@/context/MosaicContext';
 import MonacoEditor from '@monaco-editor/react';
+import { exists } from '@tauri-apps/plugin-fs';
 
-// Helper for formatting timestamps
 const formatTime = (date: Date | null) => {
     if (!date) return 'Never';
     return date.toLocaleTimeString();
@@ -27,6 +27,12 @@ export const DevView = () => {
     const [actionLog, setActionLog] = useState<string[]>([]);
     const lastUpdatedRef = useRef<Record<string, Date | null>>({});
     const [showMosaic, setShowMosaic] = useState(false);
+
+    const [fsAccess, setFsAccess] = useState<{
+        available: boolean;
+        error?: string;
+        testResult?: string;
+    }>({ available: false });
 
     // Update last updated timestamps on data change
     Object.keys(data).forEach((pageId) => {
@@ -68,6 +74,22 @@ export const DevView = () => {
         }
     };
 
+    useEffect(() => {
+        const testFsAccess = async () => {
+            try {
+                await exists('.');
+                setFsAccess({ available: true, testResult: 'Successfully accessed filesystem' });
+            } catch (error) {
+                setFsAccess({
+                    available: false,
+                    error: error instanceof Error ? error.message : 'Unknown error',
+                    testResult: 'Filesystem access denied or not available',
+                });
+            }
+        };
+        testFsAccess();
+    }, []);
+
     return (
         <div className="p-4">
             <h2 className="text-lg font-bold mb-2">StatusPage Store Debug View</h2>
@@ -81,7 +103,10 @@ export const DevView = () => {
                     className="border rounded px-2 py-1 w-16"
                 />
                 <span>min</span>
-                <button className="px-2 py-1 bg-blue-500 text-white rounded" onClick={() => { forceRefresh(); logAction('Force refresh all'); }}>
+                <button className="px-2 py-1 bg-blue-500 text-white rounded" onClick={() => {
+                    forceRefresh();
+                    logAction('Force refresh all');
+                }}>
                     Force Refresh All
                 </button>
             </div>
@@ -126,7 +151,8 @@ export const DevView = () => {
                         const hasError = !!error[pageId];
                         const isStale = !isLoading[pageId] && !data[pageId];
                         return (
-                            <li key={pageId} className={`py-2 ${hasError ? 'bg-red-100' : isStale ? 'bg-yellow-50' : ''}`}>
+                            <li key={pageId}
+                                className={`py-2 ${hasError ? 'bg-red-100' : isStale ? 'bg-yellow-50' : ''}`}>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <button
@@ -141,17 +167,21 @@ export const DevView = () => {
                                         {isStale && <span className="ml-2 text-xs text-yellow-600">Stale</span>}
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <button className="px-2 py-1 bg-blue-400 text-white rounded text-xs" onClick={() => handleForceRefresh(pageId)}>
+                                        <button className="px-2 py-1 bg-blue-400 text-white rounded text-xs"
+                                                onClick={() => handleForceRefresh(pageId)}>
                                             Refresh
                                         </button>
-                                        <button className="px-2 py-1 bg-gray-300 text-gray-800 rounded text-xs" onClick={() => handleClearCache(pageId)}>
+                                        <button className="px-2 py-1 bg-gray-300 text-gray-800 rounded text-xs"
+                                                onClick={() => handleClearCache(pageId)}>
                                             Clear Cache
                                         </button>
-                                        <span className="text-xs text-gray-500 ml-2">Last updated: {formatTime(lastUpdatedRef.current[pageId] || null)}</span>
+                                        <span
+                                            className="text-xs text-gray-500 ml-2">Last updated: {formatTime(lastUpdatedRef.current[pageId] || null)}</span>
                                     </div>
                                 </div>
                                 {expanded[pageId] && (
-                                    <div className="bg-gray-100 p-2 mt-2 rounded overflow-x-auto text-xs" style={{ maxHeight: '70vh' }}>
+                                    <div className="bg-gray-100 p-2 mt-2 rounded overflow-x-auto text-xs"
+                                         style={{ maxHeight: '70vh' }}>
                                         <MonacoEditor
                                             height="60vh"
                                             defaultLanguage="json"
@@ -185,6 +215,22 @@ export const DevView = () => {
                         <li key={idx}>{log}</li>
                     ))}
                 </ul>
+            </div>
+            <div className="mb-4">
+                <h3 className="font-semibold mb-1">Tauri Filesystem Access</h3>
+                <div
+                    className={`p-2 rounded text-sm ${fsAccess.available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                    <div className="flex items-center gap-2">
+                        <span>{fsAccess.available ? '✅' : '❌'}</span>
+                        <span>Status: {fsAccess.available ? 'Available' : 'Not Available'}</span>
+                    </div>
+                    {fsAccess.error && (
+                        <div className="mt-1 text-xs">Error: {fsAccess.error}</div>
+                    )}
+                    {fsAccess.testResult && (
+                        <div className="mt-1 text-xs">Test: {fsAccess.testResult}</div>
+                    )}
+                </div>
             </div>
         </div>
     );
