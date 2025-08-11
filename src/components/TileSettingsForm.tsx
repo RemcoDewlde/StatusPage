@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useMosaic } from '@/context/MosaicContext';
-import { DevSettingsType, PageSettingType } from "@/utils/types";
+import { DevSettingsType, PageSettingType } from '@/utils/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CardContent, CardFooter } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
-import { Switch } from "@/components/ui/switch.tsx";
-import { ApiAction, useApi } from "@/context/apiContext.tsx";
+import { Switch } from '@/components/ui/switch.tsx';
+import { ApiAction, useApi } from '@/context/apiContext.tsx';
 
 interface TileFormProps {
     onClose: () => void;
@@ -33,7 +33,7 @@ const fetchApiOptions = async () => {
 const fetchDevSettings = async () => {
     const loadedDevSettings = await DevSettingsType.load();
     return loadedDevSettings ? loadedDevSettings.devMode : false;
-}
+};
 
 // TODO: Implement 'details' is not included in the viewTypes array because it is not a valid view type at this point
 const viewTypes = ['graph', 'summary'];
@@ -67,9 +67,8 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
     useEffect(() => {
         fetchApiOptions().then(setApiOptions);
         fetchDevSettings().then((devMode) => {
-            if (devMode) {
-                setViewTypeSetView([...viewTypes, 'dev', 'welcome']);
-            }
+            console.log('Fetch Dev Settings for dev mode', devMode);
+            setViewTypeSetView([...viewTypes, 'dev', 'welcome']);
         });
     }, []);
 
@@ -234,7 +233,7 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
                             </>
                         )}
                     </div>
-                    );
+                );
             default:
                 return null;
         }
