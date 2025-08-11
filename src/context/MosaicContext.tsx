@@ -12,10 +12,11 @@ export interface MosaicContextProps {
     updateTile: (id: string, settings: TileSettings, title?: string) => void;
     removeTile: (id: string) => void;
     setLayout: (layout: MosaicNode<string> | null) => void;
+    addTileAndReturnId: (settings: TileSettings, title?: string) => string;
 }
 
 type Action =
-    | { type: 'ADD_TILE'; payload: { settings: TileSettings; title?: string } }
+    | { type: 'ADD_TILE'; payload: { settings: TileSettings; title?: string; id?: string } }
     | { type: 'UPDATE_TILE'; payload: { id: string; settings: TileSettings; title?: string } }
     | { type: 'REMOVE_TILE'; payload: { id: string } }
     | {
@@ -42,21 +43,21 @@ const mosaicReducer = (
 ): typeof initialState => {
     switch (action.type) {
         case 'ADD_TILE': {
-            const { settings, title } = action.payload;
-            const id = `tile-${uuid()}`; // Generate a unique ID for the new tile
+            const { settings, title, id } = action.payload;
+            const tileId = id || `tile-${uuid()}`; // Generate a unique ID for the new tile
             const newTitle = title || `Tile ${Object.keys(state.tiles).length + 1}`;
             let newLayout: MosaicNode<string> = state.layout
                 ? {
                     direction: 'row',
                     first: state.layout,
-                    second: id,
+                    second: tileId,
                 }
-                : id;
+                : tileId;
 
             return {
                 ...state,
-                tiles: { ...state.tiles, [id]: settings },
-                titles: { ...state.titles, [id]: newTitle },
+                tiles: { ...state.tiles, [tileId]: settings },
+                titles: { ...state.titles, [tileId]: newTitle },
                 layout: newLayout,
             };
         }
@@ -192,6 +193,15 @@ export const MosaicProvider: FC<MosaicProviderProps> = ({ children }) => {
         dispatch({ type: 'ADD_TILE', payload: { settings, title } });
     };
 
+    // Returns the new tile id
+    const addTileAndReturnId = (settings: TileSettings, title?: string): string => {
+        const id = `tile-${uuid()}`;
+        const newTitle = title || `Tile ${Object.keys(reducerState.tiles).length + 1}`;
+        // Actually add the tile with the generated id
+        dispatch({ type: 'ADD_TILE', payload: { settings: { ...settings }, title: newTitle, id } });
+        return id;
+    };
+
     const updateTile = (id: string, settings: TileSettings, title?: string) => {
         dispatch({ type: 'UPDATE_TILE', payload: { id, settings, title } });
     };
@@ -214,6 +224,7 @@ export const MosaicProvider: FC<MosaicProviderProps> = ({ children }) => {
                 updateTile,
                 removeTile,
                 setLayout,
+                addTileAndReturnId, // expose new function
             }}
         >
             {children}

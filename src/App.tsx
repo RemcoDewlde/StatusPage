@@ -11,7 +11,6 @@ import { DndProvider } from 'react-dnd';
 import { MosaicDrawerProvider } from './context/MosaicDrawerContext';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
-
 const router = createBrowserRouter([
     {
         path: '/',
@@ -47,7 +46,7 @@ const App = () => {
     }, []);
 
     return (
-        <DndProvider backend={HTML5Backend}>
+        <DndProvider backend={HTML5Backend} context={window}>
             <MosaicDrawerProvider>
                 <RouterProvider router={router} />
             </MosaicDrawerProvider>

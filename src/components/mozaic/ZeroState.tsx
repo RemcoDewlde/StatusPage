@@ -2,22 +2,34 @@ import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { useFormDialog } from '@/context/FormDialogContext.tsx';
 import { Card, CardContent, CardFooter } from '@/components/ui/card.tsx';
+import { useDrop } from 'react-dnd';
 
-const ZeroState = () => {
+const ZeroState = ({ createNode }: { createNode?: (input: any) => void }) => {
     const { openDialog } = useFormDialog();
+
+    const [{ isOver, canDrop }, drop] = useDrop({
+        accept: 'MOSAIC_VIEW',
+        drop: (item: any) => {
+            if (createNode) createNode(item);
+        },
+        collect: (monitor) => ({
+            isOver: monitor.isOver(),
+            canDrop: monitor.canDrop(),
+        }),
+    });
 
     const handleAddTile = () => {
         openDialog();
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-background">
+        <div ref={drop} className={`flex items-center justify-center min-h-screen bg-background transition-colors duration-200 ${isOver && canDrop ? 'bg-blue-50 dark:bg-blue-900' : ''}`}>
             <Card className="w-full max-w-md mx-4">
                 <CardContent className="flex flex-col items-center justify-center pt-6 pb-2 px-4 text-center">
                     <PlusCircle className="w-12 h-12 mb-4 text-muted-foreground" aria-hidden="true" />
                     <h2 className="text-lg font-semibold mb-2">No Tiles Available</h2>
                     <p className="text-sm text-muted-foreground mb-6">
-                        Click the button below to add a new tile and customize your dashboard.
+                        Drag a view here or click the button below to add a new tile and customize your dashboard.
                     </p>
                 </CardContent>
                 <CardFooter className="flex justify-center pb-6">

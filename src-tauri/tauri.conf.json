@@ -19,7 +19,7 @@
   },
   "productName": "statuspage collector",
   "mainBinaryName": "statuspage collector",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "identifier": "party.littledonut.status",
   "plugins": {
     "updater": {
