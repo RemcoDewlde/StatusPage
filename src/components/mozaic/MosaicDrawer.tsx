@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { useDrag } from 'react-dnd';
+import { useMosaicStore } from '@/stores/useMosaicStore';
 
 // TODO: Pressing the next button doesnt work....
 const AVAILABLE_VIEWS = [
@@ -13,28 +14,25 @@ const AVAILABLE_VIEWS = [
 
 const PAGE_SIZE = 6;
 
-// @ts-ignore
-const DraggableItem = ({ view, setOpen }) => {
-    // State to track drag status
-    const [isDragging, setIsDragging] = useState(false);
-    const itemRef = useRef(null);
-
-    // Manual mouse event handling to ensure drag works with the drawer
+const DraggableItem = ({ view }) => {
     const [isMouseDown, setIsMouseDown] = useState(false);
+    const itemRef = useRef(null);
+    const { setDrawerOpen, setIsDragging, setDraggedItem } = useMosaicStore();
 
-    // Use standard react-dnd with simplified approach
     const [{ opacity }, dragRef] = useDrag({
         type: 'MOSAIC_VIEW',
         item: () => {
             console.log('Drag starting for', view.label);
-            setOpen(false); // Close drawer when drag starts
+            setDrawerOpen(false);
             setIsDragging(true);
-            return { viewType: view.type, label: view.label };
+            const dragItem = { viewType: view.type, label: view.label };
+            setDraggedItem(dragItem);
+            return dragItem;
         },
         end: () => {
             console.log('Drag ended for', view.label);
             setIsDragging(false);
-            setOpen(false);
+            setDraggedItem(null);
         },
         collect: monitor => ({
             opacity: monitor.isDragging() ? 0.5 : 1,
@@ -42,24 +40,21 @@ const DraggableItem = ({ view, setOpen }) => {
     });
 
     // Helper to handle mouse interactions directly
-    const handleMouseDown = (e) => {
+    const handleMouseDown = (e: any) => {
         console.log('Mouse down on', view.label);
         setIsMouseDown(true);
     };
 
     // Handle click as an alternative to drag
-    const handleClick = (e) => {
+    const handleClick = (e: any) => {
         console.log('Clicked on', view.label);
-        // Create a new tile directly if drag doesn't work
-        if (!isDragging) {
-            setOpen(false);
-            // You can optionally trigger the creation directly here
-            // by passing a callback through props
+        if (!isMouseDown) {
+            setDrawerOpen(false);
         }
     };
 
     // Connect the drag ref
-    const combinedRef = (node) => {
+    const combinedRef = (node: any) => {
         itemRef.current = node;
         dragRef(node);
     };
@@ -78,7 +73,7 @@ const DraggableItem = ({ view, setOpen }) => {
                 msUserSelect: 'none',
                 touchAction: 'none',
                 backgroundColor: 'white',
-                boxShadow: isDragging ? '0 4px 8px rgba(0,0,0,0.2)' : '0 1px 3px rgba(0,0,0,0.1)',
+                boxShadow: isMouseDown ? '0 4px 8px rgba(0,0,0,0.2)' : '0 1px 3px rgba(0,0,0,0.1)',
                 transition: 'box-shadow 0.2s, transform 0.1s',
                 transform: isMouseDown ? 'scale(0.98)' : 'scale(1)',
                 position: 'relative',
@@ -95,27 +90,22 @@ const DraggableItem = ({ view, setOpen }) => {
         >
             <span className="text-lg font-semibold mb-1">{view.label}</span>
             <span className="text-xs text-gray-500">Drag to add</span>
-            {isDragging && <span className="sr-only">Currently dragging</span>}
         </div>
     );
 };
 
-export default function MosaicDrawer({ open, setOpen }: {
-    onDragStart?: (viewType: string) => void,
-    open: boolean,
-    setOpen: (open: boolean) => void
-}) {
+export default function MosaicDrawer() {
+    const { drawerOpen, setDrawerOpen } = useMosaicStore();
     const [page, setPage] = useState(0);
     const totalPages = Math.ceil(AVAILABLE_VIEWS.length / PAGE_SIZE);
     const pagedViews = AVAILABLE_VIEWS.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
-    // Add debug log to verify component mounting
     useEffect(() => {
-        console.log('MosaicDrawer mounted, open:', open);
-    }, []);
+        console.log('MosaicDrawer mounted, open:', drawerOpen);
+    }, [drawerOpen]);
 
     return (
-        <Drawer open={open} onOpenChange={setOpen} autoFocus={open}>
+        <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} autoFocus={drawerOpen}>
             <DrawerContent>
                 <DrawerHeader>
                     <DrawerTitle>Available Views</DrawerTitle>
@@ -126,7 +116,6 @@ export default function MosaicDrawer({ open, setOpen }: {
                             <DraggableItem
                                 key={view.type}
                                 view={view}
-                                setOpen={setOpen}
                             />
                         ))}
                     </div>

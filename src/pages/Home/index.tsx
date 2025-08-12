@@ -1,4 +1,4 @@
-import { Mosaic, MosaicWindow } from 'react-mosaic-component';
+import { Mosaic, MosaicWindow, MosaicNode, getNodeAtPath, updateTree } from 'react-mosaic-component';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import 'react-mosaic-component/react-mosaic-component.css';
@@ -17,10 +17,10 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import MosaicDrawer from '@/components/mozaic/MosaicDrawer';
-import { useMosaicDrawer } from '@/context/MosaicDrawerContext';
 import MosaicDropOverlay from '@/components/mozaic/MosaicDropOverlay';
+import { useMosaicStore } from '@/stores/useMosaicStore';
 
 const AVAILABLE_VIEW_SETTINGS: Record<string, any> = {
     summary: { viewType: 'summary', api: '', configNeeded: false, additionalSettings: {} },
@@ -32,11 +32,128 @@ const AVAILABLE_VIEW_SETTINGS: Record<string, any> = {
 
 const Home = () => {
     const tileRefs = useRef<{ [id: string]: HTMLElement | null }>({});
+    const mosaicContainerRef = useRef<HTMLDivElement>(null);
     const { layout, tiles, titles, removeTile, setLayout, addTileAndReturnId } = useMosaic();
     const [tileDimensions, setTileDimensions] = useState<Record<string, { width: number; height: number }>>({});
-    const { drawerOpen, setDrawerOpen } = useMosaicDrawer();
+    const { drawerOpen, setDrawerOpen, setDropHandler } = useMosaicStore();
 
     const { openDialog } = useFormDialog();
+
+    // Find the closest node to a position
+    const findClosestNode = useCallback((position: {x: number, y: number} | null, mosaicNode: MosaicNode<string> | null) => {
+        if (!mosaicContainerRef.current || !position) return { path: [], direction: 'right' };
+
+        const containerRect = mosaicContainerRef.current.getBoundingClientRect();
+        // Convert absolute position to relative within the Mosaic container
+        const relX = (position.x - containerRect.left) / containerRect.width;
+        const relY = (position.y - containerRect.top) / containerRect.height;
+
+        // Function to find the closest path based on relative position
+        return findClosestPath(mosaicNode, [], relX, relY);
+    }, []);
+
+    // Recursive function to find closest node
+    const findClosestPath = (node: MosaicNode<string> | null, path: string[], relX: number, relY: number) => {
+        if (!node) return { path, direction: 'right' as const };
+
+        if (typeof node === 'string') {
+            // Leaf node (tile)
+            return {
+                path,
+                direction: relY < 0.5
+                    ? (relX < 0.5 ? 'left' as const : 'right' as const)
+                    : (relX < 0.5 ? 'bottom' as const : 'right' as const)
+            };
+        }
+
+        // Split node
+        const splitInfo = node.splitPercentage || 50;
+        const isRowSplit = node.direction === 'row';
+
+        if ((isRowSplit && relX < splitInfo / 100) || (!isRowSplit && relY < splitInfo / 100)) {
+            // Go to first child
+            return findClosestPath(node.first, [...path, 'first'], relX, relY);
+        } else {
+            // Go to second child
+            return findClosestPath(node.second, [...path, 'second'], relX, relY);
+        }
+    };
+
+    // Set up drop handler with precise positioning
+    useEffect(() => {
+        setDropHandler((item, position) => {
+            console.log("Handling drop with position:", item, position);
+
+            if (!item?.viewType) return;
+
+            // Create the new node with settings from the available view types
+            const settings = {
+                ...(AVAILABLE_VIEW_SETTINGS[item.viewType] || {
+                    viewType: item.viewType,
+                    api: '',
+                    additionalSettings: {},
+                }),
+                configNeeded: true,
+            };
+
+            // Add the tile and get its ID
+            const newNodeId = addTileAndReturnId(settings, item.label || (item.viewType.charAt(0).toUpperCase() + item.viewType.slice(1)));
+
+            if (position && layout) {
+                // Find closest node and best split direction
+                const { path, direction } = findClosestNode(position, layout);
+
+                if (path.length > 0) {
+                    try {
+                        // Get the current node at the found path
+                        const currentNode = getNodeAtPath(layout, path);
+
+                        // Update the tree with the new node at the specified position
+                        const updatedTree = updateTree(layout, [{
+                            path,
+                            spec: {
+                                $set: {
+                                    direction: direction === 'left' || direction === 'right' ? 'row' : 'column',
+                                    first: direction === 'left' || direction === 'top' ? newNodeId : currentNode,
+                                    second: direction === 'left' || direction === 'top' ? currentNode : newNodeId,
+                                    splitPercentage: 50
+                                }
+                            }
+                        }]);
+
+                        console.log("Updated tree with precise positioning:", updatedTree);
+                        setLayout(updatedTree);
+                    } catch (e) {
+                        console.error("Error updating tree:", e);
+                        // Fall back to simple addition
+                        setLayout({
+                            direction: 'row',
+                            first: layout,
+                            second: newNodeId,
+                            splitPercentage: 70
+                        });
+                    }
+                } else {
+                    // First node or couldn't determine position
+                    setLayout(newNodeId);
+                }
+            } else {
+                // Fall back to simple addition if no position
+                if (!layout) {
+                    // If empty, just set the new node
+                    setLayout(newNodeId);
+                } else {
+                    // Otherwise add to right side of current layout
+                    setLayout({
+                        direction: 'row',
+                        first: layout,
+                        second: newNodeId,
+                        splitPercentage: 70
+                    });
+                }
+            }
+        });
+    }, [setDropHandler, addTileAndReturnId, layout, setLayout, findClosestNode]);
 
     const handleEditTileClick = (id: string) => {
         requestAnimationFrame(() => {
@@ -68,9 +185,9 @@ const Home = () => {
     return (
         <DndProvider backend={HTML5Backend}>
             <div className="relative">
-                <MosaicDrawer open={drawerOpen} setOpen={setDrawerOpen} />
+                <MosaicDrawer />
                 <div className="custom-layout-container min-h-screen w-full bg-gray-100 dark:bg-gray-900 rounded-lg transition-colors duration-200">
-                    <div className="relative w-full h-full min-h-screen">
+                    <div className="relative w-full h-full min-h-screen" ref={mosaicContainerRef}>
                         {/* Mosaic component */}
                         <Mosaic
                             className="min-h-screen bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 shadow-inner rounded-lg border-none"
@@ -157,37 +274,7 @@ const Home = () => {
                             initialValue={layout}
                         />
 
-                        {/* Only show the overlay when not in zero state and when layout exists */}
-                        {layout && (
-                            <MosaicDropOverlay
-                                onDrop={(input: any) => {
-                                    console.log('MosaicDropOverlay drop triggered with:', input);
-                                    let viewType: string;
-                                    let label: string | undefined;
-                                    if (typeof input === 'object' && input !== null && input.viewType) {
-                                        viewType = input.viewType;
-                                        label = input.label;
-                                    } else {
-                                        viewType = input;
-                                    }
-                                    const settings = {
-                                        ...(AVAILABLE_VIEW_SETTINGS[viewType] || {
-                                            viewType,
-                                            api: '',
-                                            additionalSettings: {},
-                                        }),
-                                        configNeeded: true,
-                                    };
-
-                                    // Log before adding the tile
-                                    console.log('Adding tile with:', { viewType, label, settings });
-
-                                    // Add the tile and log the new ID
-                                    const newId = addTileAndReturnId(settings, label || (viewType.charAt(0).toUpperCase() + viewType.slice(1)));
-                                    console.log('New tile added with ID:', newId);
-                                }}
-                            />
-                        )}
+                        <MosaicDropOverlay />
                     </div>
                 </div>
             </div>

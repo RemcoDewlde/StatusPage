@@ -4,6 +4,7 @@ import { useApiSettingsStore } from '@/store/apiSettingsStore';
 import { useMosaic } from '@/context/MosaicContext';
 import MonacoEditor from '@monaco-editor/react';
 import { exists } from '@tauri-apps/plugin-fs';
+import { useMosaicStore } from '@/stores/useMosaicStore.ts';
 
 const formatTime = (date: Date | null) => {
     if (!date) return 'Never';
@@ -19,8 +20,8 @@ export const DevView = () => {
     const fetchStatusPage = useStatusPageStore((state) => state.fetchStatusPage);
     const forceRefresh = useStatusPageStore((state) => state.forceRefresh);
     const settings = useApiSettingsStore((state) => state.settings);
+    const drophandler = useMosaicStore();
 
-    const mosaic = useMosaic();
 
     // Track last updated timestamps and action log in local state
     const [expanded, setExpanded] = useState<Record<string, boolean>>({});

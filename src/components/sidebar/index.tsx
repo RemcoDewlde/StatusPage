@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight, Home, Menu, ClipboardPlus, Settings, Plus } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useFormDialog } from '@/context/FormDialogContext';
-import { useMosaicDrawer } from '@/context/MosaicDrawerContext';
+import { useMosaicStore } from '@/stores/useMosaicStore.ts';
 
 interface SidebarItemProps {
     icon: ElementType;
@@ -101,7 +101,7 @@ const SidebarItem = ({ icon: Icon, label, path, onClick, children, isCollapsed }
 const Sidebar = () => {
     const [isCollapsed, setIsCollapsed] = useState(true);
     const { openDialog } = useFormDialog();
-    const { setDrawerOpen } = useMosaicDrawer();
+    const { setDrawerOpen } = useMosaicStore();
 
     const sidebarItems = [
         { icon: Home, label: 'Dashboard', path: '/' },

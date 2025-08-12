@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, ReactNode } from 'react';
+import { useMosaicStore } from '@/stores/useMosaicStore';
 
 interface MosaicDrawerContextType {
   drawerOpen: boolean;
@@ -8,7 +9,9 @@ interface MosaicDrawerContextType {
 const MosaicDrawerContext = createContext<MosaicDrawerContextType | undefined>(undefined);
 
 export const MosaicDrawerProvider = ({ children }: { children: ReactNode }) => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  // Get the drawer state from the Zustand store instead of local state
+  const { drawerOpen, setDrawerOpen } = useMosaicStore();
+
   return (
     <MosaicDrawerContext.Provider value={{ drawerOpen, setDrawerOpen }}>
       {children}
@@ -21,4 +24,3 @@ export const useMosaicDrawer = () => {
   if (!ctx) throw new Error('useMosaicDrawer must be used within MosaicDrawerProvider');
   return ctx;
 };
-
