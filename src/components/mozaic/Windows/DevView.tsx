@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useStatusPageStore } from '@/store/statusPageStore';
 import { useApiSettingsStore } from '@/store/apiSettingsStore';
-import { useMosaic } from '@/context/MosaicContext';
+import { useMosaicStore } from '@/store/mosaicStore';
 import MonacoEditor from '@monaco-editor/react';
 import { exists } from '@tauri-apps/plugin-fs';
 
@@ -20,7 +20,11 @@ export const DevView = () => {
     const forceRefresh = useStatusPageStore((state) => state.forceRefresh);
     const settings = useApiSettingsStore((state) => state.settings);
 
-    const mosaic = useMosaic();
+    const mosaic = {
+        layout: useMosaicStore(s => s.layout),
+        tiles: useMosaicStore(s => s.tiles),
+        titles: useMosaicStore(s => s.titles),
+    };
 
     // Track last updated timestamps and action log in local state
     const [expanded, setExpanded] = useState<Record<string, boolean>>({});

@@ -45,6 +45,7 @@ export const useStatusPageStore = create<StatusPageStoreState>((set, get) => {
 
   const pollAll = () => {
     const settings = useApiSettingsStore.getState().settings;
+    if (!settings.length) return; // avoid unnecessary work
     settings.forEach((setting) => {
       get().fetchStatusPage(setting.pageId);
     });
@@ -62,9 +63,6 @@ export const useStatusPageStore = create<StatusPageStoreState>((set, get) => {
     pollAll();
   };
 
-  // Initial poll
-  pollAll();
-
   return {
     data: {},
     isLoading: {},
@@ -76,3 +74,16 @@ export const useStatusPageStore = create<StatusPageStoreState>((set, get) => {
   };
 });
 
+// Subscribe to settings changes to fetch newly added pages
+let previousIds: Set<string> = new Set();
+useApiSettingsStore.subscribe((state) => {
+  const currentIds = new Set(state.settings.map(s => s.pageId));
+  // Determine new ids
+  const newIds: string[] = [];
+  currentIds.forEach(id => { if (!previousIds.has(id)) newIds.push(id); });
+  previousIds = currentIds;
+  if (newIds.length) {
+    const fetch = useStatusPageStore.getState().fetchStatusPage;
+    newIds.forEach(id => fetch(id));
+  }
+});

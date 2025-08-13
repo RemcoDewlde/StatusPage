@@ -3,12 +3,12 @@ import { DevSettingsType, PageSetting, PageSettingType } from '@/utils/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Github, Plus, Trash2 } from 'lucide-react';
-import { ToastType, useToast } from '@/context/toastContext.tsx';
+import { ToastType, useToastStore } from '@/store/toastStore.ts';
 import { Input } from '@/components/ui/input';
 import { invoke } from '@tauri-apps/api/core';
 import { Command } from '@/enums/command.enum.ts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
-import { useRefresh } from '@/context/RefreshContext.tsx';
+import { useRefreshStore } from '@/store/refreshStore';
 import { Switch } from '@/components/ui/switch.tsx';
 import { useApiSettingsStore } from '@/store/apiSettingsStore';
 
@@ -19,8 +19,9 @@ export default function Settings() {
     const [newIsCustomDomain, setNewIsCustomDomain] = useState(false);
     const [version, setVersion] = useState('dev');
     const [isDevMode, setIsDevMode] = useState(false);
-    const { refreshInterval, setRefreshInterval } = useRefresh();
-    const { addToast } = useToast();
+    const refreshInterval = useRefreshStore(s => s.refreshInterval);
+    const setRefreshInterval = useRefreshStore(s => s.setRefreshInterval);
+    const addToast = useToastStore((s) => s.addToast);
 
     const intervalOptions = [1, 2, 5, 10, 15, 30];
 

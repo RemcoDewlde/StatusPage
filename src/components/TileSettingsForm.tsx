@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useMosaic } from '@/context/MosaicContext';
 import { DevSettingsType, PageSettingType } from '@/utils/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CardContent, CardFooter } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
 import { Switch } from '@/components/ui/switch.tsx';
-import { ApiAction, useApi } from '@/context/apiContext.tsx';
+import { ApiAction } from '@/enums/apiActions.enum';
+import { useApiDataStore } from '@/store/apiDataStore.ts';
+import { useMosaicStore } from '@/store/mosaicStore';
+import { Component } from '@/interfaces/component.interface.ts';
 
 interface TileFormProps {
     onClose: () => void;
@@ -28,12 +30,15 @@ const viewTypes = ['graph', 'summary'];
 
 const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
 
-    const { fetchStatusPageData } = useApi();
+    const fetchStatusPageData = useApiDataStore((s) => s.fetchStatusPageData);
     // New state variables
     const [groups, setGroups] = useState<{ id: string; name: string }[]>([]);
     const [hasGroups, setHasGroups] = useState<boolean>(false);
 
-    const { tiles, titles, addTile, updateTile } = useMosaic();
+    const tiles = useMosaicStore(s => s.tiles);
+    const titles = useMosaicStore(s => s.titles);
+    const addTile = useMosaicStore(s => s.addTile);
+    const updateTile = useMosaicStore(s => s.updateTile);
     const initialSettings = tileId ? tiles[tileId] : {
         viewType: '',
         api: '',
@@ -85,7 +90,7 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
                     // Create a map of group ids to group names
                     const groupMap = new Map<string, string>();
 
-                    components.forEach((component) => {
+                    components.forEach((component: Component) => {
                         if (component.group && component.id && component.name) {
                             // This component is a group
                             groupMap.set(component.id, component.name);

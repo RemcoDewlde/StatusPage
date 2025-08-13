@@ -1,21 +1,16 @@
-import { MosaicContextProps } from '@/context/MosaicContext.tsx';
-
-const initialState: MosaicContextProps = {
-    layout: "welcomeTile",
+const initialState = {
+    layout: 'welcomeTile' as const,
     tiles: {
         welcomeTile: { viewType: 'welcome', api: '', additionalSettings: {} },
-    },
+    } as Record<string, { viewType: string; api: string; additionalSettings: any }>,
     titles: {
         welcomeTile: 'Welcome view',
-    },
-    addTile: () => {
-    },
-    updateTile: () => {
-    },
-    removeTile: () => {
-    },
-    setLayout: () => {
-    },
+    } as Record<string, string>,
+    // No-op placeholders (legacy context compatibility)
+    addTile: () => {},
+    updateTile: () => {},
+    removeTile: () => {},
+    setLayout: () => {},
 };
 
 export default initialState;

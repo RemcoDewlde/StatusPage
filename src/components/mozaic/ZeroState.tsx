@@ -1,14 +1,19 @@
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
-import { useFormDialog } from '@/context/FormDialogContext.tsx';
+import { useFormDialogStore } from "@/store/formDialogStore";
 import { Card, CardContent, CardFooter } from '@/components/ui/card.tsx';
 
 const ZeroState = () => {
-    const { openDialog } = useFormDialog();
-
+    const openDialog = useFormDialogStore(s => s.openDialog);
     const handleAddTile = () => {
         openDialog();
     };
+
+    //    const layout = useMosaicStore(s => s.layout);
+    //     const tiles = useMosaicStore(s => s.tiles);
+    //     const titles = useMosaicStore(s => s.titles);
+    //     const removeTile = useMosaicStore(s => s.removeTile);
+    //     const setLayout = useMosaicStore(s => s.setLayout);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-background">

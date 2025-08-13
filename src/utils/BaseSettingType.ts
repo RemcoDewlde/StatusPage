@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { ToastType } from '../context/toastContext.tsx';
+import { ToastType } from '@/store/toastStore.ts';
 import { BaseDirectory, exists, readTextFile, writeFile } from '@tauri-apps/plugin-fs';
 import { typeRegistry } from './TypeRegistry.ts';
 
