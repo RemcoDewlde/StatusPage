@@ -14,6 +14,7 @@ interface MosaicState {
   removeTile: (id: string) => void;
   setLayout: (layout: MosaicNode<string> | null) => void;
   hydrate: () => Promise<void>;
+  addTileRelative?: (targetId: string, edge: 'left'|'right'|'top'|'bottom', settings: TileSettings, title?: string) => void;
 }
 
 // Helper to remove node from mosaic tree
@@ -26,6 +27,18 @@ const removeNode = (currentNode: MosaicNode<string> | null, nodeToRemove: string
   if (first === null) return second;
   if (second === null) return first;
   return { ...currentNode, first, second };
+};
+
+const insertRelative = (layout: MosaicNode<string> | null, targetId: string, newNode: MosaicNode<string>): MosaicNode<string> | null => {
+  if (!layout) return layout;
+  if (typeof layout === 'string') {
+    return layout === targetId ? newNode : layout;
+  }
+    return {
+    ...layout,
+    first: insertRelative(layout.first, targetId, newNode),
+    second: insertRelative(layout.second, targetId, newNode),
+  };
 };
 
 let saveTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -85,6 +98,31 @@ export const useMosaicStore = create<MosaicState>((set, get) => ({
     set({ tiles: remainingTiles, titles: remainingTitles, layout: updatedLayout });
   },
   setLayout: (layout) => set({ layout }),
+  addTileRelative: (targetId, edge, settings, title) => {
+    const state = get();
+    if (!state.tiles[targetId]) return;
+    const id = `tile-${uuid()}`;
+    const newTitle = title || `Tile ${Object.keys(state.tiles).length + 1}`;
+    let direction: 'row'|'column';
+    let first: MosaicNode<string>; let second: MosaicNode<string>;
+    switch(edge){
+      case 'left':
+        direction='row'; first=id; second=targetId; break;
+      case 'right':
+        direction='row'; first=targetId; second=id; break;
+      case 'top':
+        direction='column'; first=id; second=targetId; break;
+      case 'bottom':
+        direction='column'; first=targetId; second=id; break;
+    }
+    const newParent: MosaicNode<string> = { direction, first, second } as any;
+    const newLayout = insertRelative(state.layout, targetId, newParent) || newParent;
+    set({
+      tiles: { ...state.tiles, [id]: settings },
+      titles: { ...state.titles, [id]: newTitle },
+      layout: newLayout,
+    });
+  },
 }));
 
 // Debounced persistence subscription
@@ -100,4 +138,3 @@ useMosaicStore.subscribe((state) => {
     }
   }, SAVE_DEBOUNCE_DELAY);
 });
-

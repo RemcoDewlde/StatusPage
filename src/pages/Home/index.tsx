@@ -6,6 +6,7 @@ import ContentComponentFactory from '@/utils/ContentComponentFactory.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Settings2 } from 'lucide-react';
 import { useFormDialogStore } from '@/store/formDialogStore';
+import { useDnDStore } from '@/store/dndStore';
 // @ts-ignore
 import './custom-mosaic-styles.css';
 import {
@@ -26,7 +27,51 @@ const Home = () => {
     const [tileDimensions, setTileDimensions] = useState<Record<string, { width: number; height: number }>>({});
 
     const openDialog = useFormDialogStore(s => s.openDialog);
+    const dragging = useDnDStore(s => s.dragging);
+    const hover = useDnDStore(s => s.hover);
+    const setHover = useDnDStore(s => s.setHover);
+    const clearHover = useDnDStore(s => s.clearHover);
+    const endDrag = useDnDStore(s => s.endDrag);
+    const addTileRelative = useMosaicStore(s => s.addTileRelative);
 
+    const EDGE_THRESHOLD = 0.3; // proportion of width/height for edge detection
+
+    const computeEdge = (e: React.DragEvent, el: HTMLElement): 'left'|'right'|'top'|'bottom' => {
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const w = rect.width;
+        const h = rect.height;
+        const leftZone = w * EDGE_THRESHOLD;
+        const rightZone = w * (1 - EDGE_THRESHOLD);
+        const topZone = h * EDGE_THRESHOLD;
+        const bottomZone = h * (1 - EDGE_THRESHOLD);
+        const distLeft = x;
+        const distRight = w - x;
+        const distTop = y;
+        const distBottom = h - y;
+        const min = Math.min(distLeft, distRight, distTop, distBottom);
+        if (min === distLeft) return 'left';
+        if (min === distRight) return 'right';
+        if (min === distTop) return 'top';
+        return 'bottom';
+    };
+
+    const buildSettingsForKind = (kind: string) => ({
+        viewType: kind,
+        api: '',
+        additionalSettings: {},
+    });
+
+    const handleDropNewTile = (targetId: string) => {
+        if (!dragging) return;
+        const edge = hover?.edge || 'right';
+        const settings = buildSettingsForKind(dragging.tileKind);
+        if (addTileRelative) {
+            addTileRelative(targetId, edge, settings, `${dragging.tileKind} tile`);
+        }
+        endDrag();
+    };
 
     const handleEditTileClick = (id: string) => {
         openDialog(id);
@@ -98,19 +143,45 @@ const Home = () => {
                                 </div>
                             }
                         >
-                            <div className="p-4 flex flex-col h-full"
-                                 ref={(node) => {
-                                     tileRefs.current[id] = node;
-                                 }}>
-                                <div className="flex-1">
-                                    <ContentComponentFactory
-                                        viewType={settings.viewType}
-                                        api={settings.api}
-                                        additionalSettings={settings.additionalSettings}
-                                        dimensions={tileDimensions[id]}
-                                    />
-                                </div>
-                            </div>
+                            <div
+                                className="p-4 flex flex-col h-full relative"
+                                ref={(node) => { tileRefs.current[id] = node; }}
+                                onDragOver={(e) => {
+                                    if (!dragging || !tileRefs.current[id]) return;
+                                    e.preventDefault();
+                                    const edge = computeEdge(e, tileRefs.current[id]!);
+                                    setHover(id, edge);
+                                }}
+                                onDragLeave={(e) => {
+                                    if (!dragging) return;
+                                    // Only clear if leaving the element bounds entirely
+                                    const related = e.relatedTarget as Node | null;
+                                    if (related && tileRefs.current[id]?.contains(related)) return;
+                                    clearHover();
+                                }}
+                                onDrop={(e) => {
+                                    if (!dragging) return;
+                                    e.preventDefault();
+                                    handleDropNewTile(id);
+                                }}
+                            >
+                                {dragging && hover?.targetId === id && (
+                                    <div className="mosaic-dnd-overlay">
+                                        <div className={`edge edge-left ${hover.edge==='left'?'active':''}`}></div>
+                                        <div className={`edge edge-right ${hover.edge==='right'?'active':''}`}></div>
+                                        <div className={`edge edge-top ${hover.edge==='top'?'active':''}`}></div>
+                                        <div className={`edge edge-bottom ${hover.edge==='bottom'?'active':''}`}></div>
+                                    </div>
+                                )}
+                                 <div className="flex-1">
+                                     <ContentComponentFactory
+                                         viewType={settings.viewType}
+                                         api={settings.api}
+                                         additionalSettings={settings.additionalSettings}
+                                         dimensions={tileDimensions[id]}
+                                     />
+                                 </div>
+                             </div>
                         </MosaicWindow>
                     );
                 }}

@@ -102,55 +102,41 @@
     overflow: hidden;
     background-color: #ffffff;
     border-radius: 0.6rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb; /* gray-200 */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 3px -1px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 150ms ease, border-color 150ms ease, background-color 150ms ease;
 }
 
-.mosaic-window .mosaic-window-toolbar,
-.mosaic-preview .mosaic-window-toolbar {
-    z-index: 4;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-shrink: 0;
-    height: 3rem; /* 48px, matching shadcn CardHeader */
-    background-color: #ffffff; /* bg-white */
-    padding: 0 1rem; /* px-4 */
-    border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
-    border-top-left-radius: 0.5rem; /* rounded-t-lg */
-    border-top-right-radius: 0.5rem; /* rounded-t-lg */
-    cursor: move;
+.dark .mosaic-window,
+.dark .mosaic-preview {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.35), rgba(59, 130, 246, 0.15));
+    border-color: rgba(59, 130, 246, 0.65);
+    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.45), 0 0 0 3px rgba(96, 165, 250, 0.30);
 }
 
-.mosaic-window .mosaic-window-title,
-.mosaic-preview .mosaic-window-title {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    font-size: 1.125rem; /* text-lg */
-    font-weight: 500; /* font-medium */
-    color: #374151; /* text-gray-700 */
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+.mosaic-window:hover,
+.mosaic-preview:hover {
+    /*border-color: #cbd5e1; !* gray-300 *!*/
+    border-color: #3b82f6; /* gray-300 */
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4), 0 0 0 3px rgba(59, 130, 246, 0.25);
 }
 
-.mosaic-window .mosaic-window-controls,
-.mosaic-preview .mosaic-window-controls {
-    display: flex;
-    height: 100%;
-    align-items: center;
-    gap: 0.5rem; /* space-x-2 */
+.dark .mosaic-window:hover,
+.dark .mosaic-preview:hover {
+    border-color: #3b82f6; /* gray-600 */
+    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.45), 0 0 0 3px rgba(96, 165, 250, 0.30);
 }
 
-.mosaic-window .mosaic-window-body,
-.mosaic-preview .mosaic-window-body {
-    position: relative;
-    flex: 1;
-    background-color: #ffffff; /* bg-white */
-    padding: 1rem; /* p-4 */
-    border-bottom-left-radius: 0.5rem; /* rounded-b-lg */
-    border-bottom-right-radius: 0.5rem; /* rounded-b-lg */
-    overflow: auto;
+.mosaic-window:focus-within,
+.mosaic-preview:focus-within {
+    border-color: #3b82f6; /* blue-500 */
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4), 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+.dark .mosaic-window:focus-within,
+.dark .mosaic-preview:focus-within {
+    border-color: #60a5fa; /* blue-400 */
+    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.45), 0 0 0 3px rgba(96, 165, 250, 0.30);
 }
 
 /* Additional Actions Bar (if used) */
@@ -244,4 +230,112 @@
 .mosaic-window .mosaic-window-controls .button:focus,
 .mosaic-preview .mosaic-window-controls .button:focus {
     outline: none;
+}
+
+/* Drag & Drop Overlay Styling */
+.mosaic-dnd-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 0.6rem; /* match mosaic-window */
+    pointer-events: none;
+    z-index: 1; /* above content, below toolbar (toolbar ~ z-index:4) */
+}
+
+.mosaic-dnd-overlay .edge {
+    position: absolute;
+    opacity: 0;
+    border-radius: 0.5rem; /* slight rounding */
+    backdrop-filter: saturate(160%) blur(2px);
+    -webkit-backdrop-filter: saturate(160%) blur(2px);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.22), rgba(59, 130, 246, 0.08));
+    border: 2px dashed rgba(59, 130, 246, 0.55);
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3), 0 4px 10px -2px rgba(0, 0, 0, 0.15);
+    transition: opacity 120ms ease, background-color 120ms ease, border-color 120ms ease;
+}
+
+.dark .mosaic-dnd-overlay .edge {
+    background: linear-gradient(135deg, rgba(96, 165, 250, 0.22), rgba(96, 165, 250, 0.05));
+    border-color: rgba(96, 165, 250, 0.55);
+    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.45), 0 0 0 3px rgba(96, 165, 250, 0.30);
+}
+
+.mosaic-dnd-overlay .edge.active {
+    opacity: 1;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.35), rgba(59, 130, 246, 0.15));
+    border-color: rgba(59, 130, 246, 0.85);
+}
+
+.dark .mosaic-dnd-overlay .edge.active {
+    background: linear-gradient(135deg, rgba(96, 165, 250, 0.4), rgba(96, 165, 250, 0.2));
+    border-color: rgba(147, 197, 253, 0.9);
+}
+
+.mosaic-dnd-overlay .edge-left {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+}
+
+.mosaic-dnd-overlay .edge-right {
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 50%;
+}
+
+.mosaic-dnd-overlay .edge-top {
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 50%;
+}
+
+.mosaic-dnd-overlay .edge-bottom {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 50%;
+}
+
+/* Enhanced preview styling to align with DnD overlay aesthetics */
+.mosaic-preview:not(.mosaic-window) {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.20), rgba(59, 130, 246, 0.08));
+    border: 2px dashed rgba(59, 130, 246, 0.45);
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.25), 0 6px 14px -4px rgba(0, 0, 0, 0.15);
+    backdrop-filter: saturate(150%) blur(2px);
+    -webkit-backdrop-filter: saturate(150%) blur(2px);
+}
+
+.dark .mosaic-preview:not(.mosaic-window) {
+    background: linear-gradient(135deg, rgba(96, 165, 250, 0.25), rgba(96, 165, 250, 0.10));
+    border-color: rgba(147, 197, 253, 0.55);
+    box-shadow: 0 0 0 1px rgba(147, 197, 253, 0.30), 0 6px 14px -4px rgba(0, 0, 0, 0.5);
+}
+
+.mosaic-preview:not(.mosaic-window):hover {
+    border-color: rgba(59, 130, 246, 0.65);
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.35), 0 8px 18px -5px rgba(0, 0, 0, 0.18);
+}
+
+.dark .mosaic-preview:not(.mosaic-window):hover {
+    border-color: rgba(147, 197, 253, 0.7);
+}
+
+/* Subtle pulse animation for active edge */
+@keyframes dndEdgePulse {
+    0%, 100% {
+        box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.6), 0 4px 10px -2px rgba(0, 0, 0, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.85), 0 6px 14px -2px rgba(0, 0, 0, 0.25);
+    }
+}
+
+.mosaic-dnd-overlay .edge.active {
+    animation: dndEdgePulse 1.4s ease-in-out infinite;
+}
+
+.dark .mosaic-dnd-overlay .edge.active {
+    animation: dndEdgePulse 1.4s ease-in-out infinite;
 }
