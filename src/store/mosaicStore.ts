@@ -26,19 +26,24 @@ const removeNode = (currentNode: MosaicNode<string> | null, nodeToRemove: string
   if (first === null && second === null) return null;
   if (first === null) return second;
   if (second === null) return first;
-  return { ...currentNode, first, second };
+  return { ...currentNode, first, second } as MosaicNode<string>;
 };
 
-const insertRelative = (layout: MosaicNode<string> | null, targetId: string, newNode: MosaicNode<string>): MosaicNode<string> | null => {
-  if (!layout) return layout;
+// Non-null recursive insert that preserves MosaicNode<string> typing
+const insertRelativeNonNull = (layout: MosaicNode<string>, targetId: string, newNode: MosaicNode<string>): MosaicNode<string> => {
   if (typeof layout === 'string') {
     return layout === targetId ? newNode : layout;
   }
-    return {
+  return {
     ...layout,
-    first: insertRelative(layout.first, targetId, newNode),
-    second: insertRelative(layout.second, targetId, newNode),
+    first: insertRelativeNonNull(layout.first, targetId, newNode),
+    second: insertRelativeNonNull(layout.second, targetId, newNode),
   };
+};
+
+const insertRelative = (layout: MosaicNode<string> | null, targetId: string, newNode: MosaicNode<string>): MosaicNode<string> | null => {
+  if (!layout) return null;
+  return insertRelativeNonNull(layout, targetId, newNode);
 };
 
 let saveTimeout: ReturnType<typeof setTimeout> | null = null;

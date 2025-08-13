@@ -34,18 +34,12 @@ const Home = () => {
     const endDrag = useDnDStore(s => s.endDrag);
     const addTileRelative = useMosaicStore(s => s.addTileRelative);
 
-    const EDGE_THRESHOLD = 0.3; // proportion of width/height for edge detection
-
     const computeEdge = (e: React.DragEvent, el: HTMLElement): 'left'|'right'|'top'|'bottom' => {
         const rect = el.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         const w = rect.width;
         const h = rect.height;
-        const leftZone = w * EDGE_THRESHOLD;
-        const rightZone = w * (1 - EDGE_THRESHOLD);
-        const topZone = h * EDGE_THRESHOLD;
-        const bottomZone = h * (1 - EDGE_THRESHOLD);
         const distLeft = x;
         const distRight = w - x;
         const distTop = y;

@@ -26,10 +26,6 @@ export default function Settings() {
     const intervalOptions = [1, 2, 5, 10, 15, 30];
 
     useEffect(() => {
-        setRefreshInterval(refreshInterval);
-    }, [refreshInterval]);
-
-    useEffect(() => {
         const fetchDevSettings = async () => {
             const loadedDevSettings = await DevSettingsType.load((message: string) =>
                 addToast(message, ToastType.Info, true),
