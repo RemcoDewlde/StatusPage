@@ -160,6 +160,12 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+.custom-layout-container .mosaic-window .mosaic-window-body > * {
+    min-height: 0;
 }
 
 .mosaic-window .mosaic-preview h4,
@@ -300,4 +306,11 @@
 
 .dark .custom-layout-container .mosaic-split:hover .mosaic-split-line {
     box-shadow: 0 0 0 1px rgba(147, 197, 253, 0.8) !important;
+}
+
+/* Restore scroll on the tile body */
+.custom-layout-container .mosaic-window .mosaic-window-body,
+.custom-layout-container .mosaic-preview .mosaic-window-body {
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch;
 }
