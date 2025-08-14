@@ -102,10 +102,10 @@ const TilePalette = ({ isCollapsed }: { isCollapsed: boolean }) => {
     const startDrag = useDnDStore(s => s.startDrag);
     const endDrag = useDnDStore(s => s.endDrag);
     const items = [
-        { kind: 'summary', label: 'Summary Tile' },
-        { kind: 'graph', label: 'Graph Tile' },
-        { kind: 'welcome', label: 'Welcome Tile' },
-        { kind: 'dev', label: 'Dev Tile' },
+        { kind: 'summary', label: 'Summary' },
+        { kind: 'graph', label: 'Graph' },
+        { kind: 'welcome', label: 'Welcome' },
+        { kind: 'dev', label: 'Dev' },
     ];
     return (
         <div className="mt-4 space-y-2">
