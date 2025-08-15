@@ -9,12 +9,7 @@ import { useFormDialogStore } from '@/store/formDialogStore';
 import { useDnDStore } from '@/store/dndStore';
 // @ts-ignore
 import './custom-mosaic-styles.css';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu.tsx';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu.tsx';
 import { useEffect, useRef, useState } from 'react';
 
 const Home = () => {
@@ -34,7 +29,7 @@ const Home = () => {
     const endDrag = useDnDStore(s => s.endDrag);
     const addTileRelative = useMosaicStore(s => s.addTileRelative);
 
-    const computeEdge = (e: React.DragEvent, el: HTMLElement): 'left'|'right'|'top'|'bottom' => {
+    const computeEdge = (e: React.DragEvent, el: HTMLElement): 'left' | 'right' | 'top' | 'bottom' => {
         const rect = el.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -92,11 +87,11 @@ const Home = () => {
     }, [layout]);
 
     return (
-        <div className="custom-layout-container min-h-screen w-full bg-gray-100 dark:bg-gray-900 rounded-lg">
+        <div className="custom-layout-container min-h-screen w-full rounded-lg bg-gray-100 dark:bg-gray-900">
             <Mosaic<string>
-                className="min-h-screen bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 shadow-inner rounded-lg border-none"
+                className="min-h-screen rounded-lg border border-none border-gray-300 bg-white text-gray-700 shadow-inner dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
                 value={layout}
-                onChange={(newLayout) => {
+                onChange={newLayout => {
                     setLayout(newLayout);
                     handleResize();
                 }}
@@ -106,7 +101,7 @@ const Home = () => {
                     return (
                         <MosaicWindow<string>
                             path={path}
-                            title={title || "Untitled"}
+                            title={title || 'Untitled'}
                             toolbarControls={
                                 <div className="mosaic-window-controls flex items-center space-x-2">
                                     <DropdownMenu>
@@ -114,71 +109,67 @@ const Home = () => {
                                             <Button
                                                 size="sm"
                                                 variant="ghost"
-                                                className="h-8 w-8 p-0 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
-                                            >
+                                                className="text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-ring h-8 w-8 cursor-pointer p-0 focus-visible:ring-1">
                                                 <Settings2 className="h-4 w-4" />
                                                 <span className="sr-only">Open settings menu</span>
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end" className="w-40 cursor-default">
-                                            <DropdownMenuItem
-                                                onSelect={() => handleEditTileClick(id)}
-                                                className="flex items-center cursor-pointer"
-                                            >
+                                            <DropdownMenuItem onSelect={() => handleEditTileClick(id)} className="flex cursor-pointer items-center">
                                                 <span>Edit</span>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem
                                                 onSelect={() => removeTile(id)}
-                                                className="flex items-center text-destructive focus:text-destructive cursor-pointer"
-                                            >
+                                                className="text-destructive focus:text-destructive flex cursor-pointer items-center">
                                                 <span>Remove</span>
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>
-                            }
-                        >
+                            }>
                             <div
-                                className="p-4 flex flex-col h-full relative"
-                                ref={(node) => { tileRefs.current[id] = node; }}
-                                onDragOver={(e) => {
+                                className="relative flex h-full flex-col p-4"
+                                ref={node => {
+                                    tileRefs.current[id] = node;
+                                }}
+                                onDragOver={e => {
                                     if (!dragging || !tileRefs.current[id]) return;
                                     e.preventDefault();
                                     const edge = computeEdge(e, tileRefs.current[id]!);
                                     setHover(id, edge);
                                 }}
-                                onDragLeave={(e) => {
+                                onDragLeave={e => {
                                     if (!dragging) return;
-                                    // Only clear if leaving the element bounds entirely
+                                    // Only clear if leaving the element bounds entirely and this tile is the active hover target
                                     const related = e.relatedTarget as Node | null;
                                     if (related && tileRefs.current[id]?.contains(related)) return;
+                                    if (hover?.targetId !== id) return;
                                     clearHover();
                                 }}
-                                onDrop={(e) => {
+                                onDrop={e => {
                                     if (!dragging) return;
                                     e.preventDefault();
                                     handleDropNewTile(id);
-                                }}
-                            >
+                                }}>
                                 {dragging && hover?.targetId === id && (
                                     <div className="mosaic-dnd-overlay">
-                                        <div className={`edge edge-left ${hover.edge==='left'?'active':''}`}></div>
-                                        <div className={`edge edge-right ${hover.edge==='right'?'active':''}`}></div>
-                                        <div className={`edge edge-top ${hover.edge==='top'?'active':''}`}></div>
-                                        <div className={`edge edge-bottom ${hover.edge==='bottom'?'active':''}`}></div>
+                                        <div className={`edge edge-left ${hover.edge === 'left' ? 'active' : ''}`}></div>
+                                        <div className={`edge edge-right ${hover.edge === 'right' ? 'active' : ''}`}></div>
+                                        <div className={`edge edge-top ${hover.edge === 'top' ? 'active' : ''}`}></div>
+                                        <div className={`edge edge-bottom ${hover.edge === 'bottom' ? 'active' : ''}`}></div>
                                     </div>
                                 )}
-                                 <div className="flex-1">
-                                     <ContentComponentFactory
-                                         viewType={settings.viewType}
-                                         api={settings.api}
-                                         additionalSettings={settings.additionalSettings}
-                                         dimensions={tileDimensions[id]}
-                                         needsConfig={settings.needsConfig}
-                                         tileId={id}
-                                     />
-                                 </div>
-                             </div>
+                                <div className="flex-1">
+                                    <ContentComponentFactory
+                                        viewType={settings.viewType}
+                                        api={settings.api}
+                                        additionalSettings={settings.additionalSettings}
+                                        dimensions={tileDimensions[id]}
+                                        needsConfig={settings.needsConfig}
+                                        tileId={id}
+                                    />
+                                </div>
+                            </div>
                         </MosaicWindow>
                     );
                 }}
