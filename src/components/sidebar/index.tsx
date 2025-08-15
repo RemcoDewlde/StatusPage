@@ -6,6 +6,7 @@ import { ChevronDown, ChevronRight, ClipboardPlus, Home, Menu, Settings } from '
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useFormDialogStore } from '@/store/formDialogStore';
 import { useDnDStore } from '@/store/dndStore';
+import { useSettingsDialogStore } from '@/store/settingsDialogStore';
 
 interface SidebarItemProps {
     icon: ElementType;
@@ -178,11 +179,12 @@ const TilePalette = ({ isCollapsed }: { isCollapsed: boolean }) => {
 const Sidebar = () => {
     const [isCollapsed, setIsCollapsed] = useState(true);
     const openDialog = useFormDialogStore(s => s.openDialog);
+    const openSettings = useSettingsDialogStore(s => s.open);
 
     const sidebarItems = [
         { icon: Home, label: 'Dashboard', path: '/' },
         { icon: ClipboardPlus, label: 'Add Status Tile', onClick: () => openDialog() },
-        { icon: Settings, label: 'Settings', path: '/settings' },
+        { icon: Settings, label: 'Settings', onClick: () => openSettings() },
     ];
 
     const Sidebar = (
