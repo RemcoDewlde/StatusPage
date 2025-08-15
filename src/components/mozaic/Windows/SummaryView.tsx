@@ -1,15 +1,12 @@
-import { useEffect, useState } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area.tsx";
-import { useStatusPageStore } from "@/store/statusPageStore";
-import { StatusPageData } from "@/interfaces/statusPageData.interface.ts";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import StatusPageIcon from "@/utils/StatusIcon.tsx";
-import { Component } from "@/interfaces/component.interface.ts";
-
-interface SummaryViewProps {
-    api: string;
-    additionalSettings?: Record<string, any>;
-}
+import { useEffect, useState } from 'react';
+import { ScrollArea } from '@/components/ui/scroll-area.tsx';
+import { useStatusPageStore } from '@/store/statusPageStore';
+import { StatusPageData } from '@/interfaces/statusPageData.interface.ts';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import StatusPageIcon from '@/utils/StatusIcon.tsx';
+import { Component } from '@/interfaces/component.interface.ts';
+import { Button } from '@/components/ui/button.tsx';
+import { useFormDialogStore } from '@/store/formDialogStore';
 
 const sortComponentsByGroup = (data: StatusPageData) => {
     const groups: { [key: string]: Component[] } = {};
@@ -26,7 +23,8 @@ const sortComponentsByGroup = (data: StatusPageData) => {
     return groups;
 };
 
-export const SummaryView = ({ api, additionalSettings }: SummaryViewProps) => {
+export const SummaryView = ({ api, additionalSettings, needsConfig, tileId }: any) => {
+    const openDialog = useFormDialogStore(s => s.openDialog);
     const data = useStatusPageStore((state) => state.data[api] || null);
     const isLoading = useStatusPageStore((state) => state.isLoading[api] || false);
     const error = useStatusPageStore((state) => state.error[api] || null);
@@ -40,6 +38,7 @@ export const SummaryView = ({ api, additionalSettings }: SummaryViewProps) => {
     const showInGroups = additionalSettings?.showInGroups;
 
     useEffect(() => {
+        if (needsConfig) return;
         if (!api || api === "/api/summary" || api.trim() === "") return;
         if (data) {
             // Group components
@@ -55,7 +54,21 @@ export const SummaryView = ({ api, additionalSettings }: SummaryViewProps) => {
             // If no data, try to fetch it
             fetchStatusPage(api);
         }
-    }, [api, data, fetchStatusPage]);
+    }, [api, data, fetchStatusPage, needsConfig]);
+
+    if (needsConfig) {
+        return (
+            <div className="h-full w-full flex items-center justify-center">
+                <div className="text-center">
+                    <h3 className="text-base font-semibold mb-1">Configure summary tile</h3>
+                    <p className="text-sm text-muted-foreground mb-3">Select an API and (optionally) grouping to continue.</p>
+                    <div className="flex items-center justify-center gap-2">
+                        {tileId && <Button size="sm" onClick={() => openDialog(tileId)}>Configure now</Button>}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     if (!data || isLoading) {
         return (

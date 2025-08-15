@@ -12,6 +12,7 @@ export type TileSettings = {
     api: string;
     viewType: string;
     additionalSettings: Record<string, any>;
+    needsConfig?: boolean;
 };
 
 @RegisterType
@@ -91,5 +92,3 @@ export class DevSettingsType extends BaseSettingType {
         };
     }
 }
-
-

@@ -1,6 +1,3 @@
-/* custom-mosaic-styles.css */
-
-/* Root container for the mosaic */
 .mosaic {
     height: 100%;
     width: 100%;
@@ -33,66 +30,37 @@
     margin-bottom: 3px;
 }
 
-/* Resizable Split Styles */
-.mosaic-split {
-    position: absolute;
-    z-index: 1;
-    touch-action: none;
+.custom-layout-container {
+    --m-bg-start: rgba(59, 130, 246, 0.06);
+    --m-bg-end: rgba(59, 130, 246, 0.02);
+    --m-overlay-bg-start: rgba(59, 130, 246, 0.20);
+    --m-overlay-bg-end: rgba(59, 130, 246, 0.08);
+    --m-border: rgba(59, 130, 246, 0.28);
+    --m-border-dashed: rgba(59, 130, 246, 0.55);
+    --m-border-hover: rgba(59, 130, 246, 0.65);
+    --m-shadow: 0 0 0 1px rgba(59, 130, 246, 0.18), 0 4px 10px -4px rgba(0, 0, 0, 0.12);
+    --m-shadow-strong: 0 0 0 1px rgba(59, 130, 246, 0.30), 0 6px 14px -4px rgba(0, 0, 0, 0.25);
+    --m-shadow-hover: 0 0 0 1px rgba(59, 130, 246, 0.35), 0 8px 18px -5px rgba(0, 0, 0, 0.20);
+    --m-focus-ring: 0 0 0 1px rgba(59, 130, 246, 0.4), 0 0 0 3px rgba(59, 130, 246, 0.25);
+    --m-toolbar-height: 40px;
 }
 
-.mosaic-split:hover {
-    background: transparent;
+.dark .custom-layout-container,
+.bp3-dark .custom-layout-container,
+.bp5-dark .custom-layout-container {
+    --m-bg-start: rgba(96, 165, 250, 0.28);
+    --m-bg-end: rgba(96, 165, 250, 0.12);
+    --m-overlay-bg-start: rgba(96, 165, 250, 0.25);
+    --m-overlay-bg-end: rgba(96, 165, 250, 0.10);
+    --m-border: rgba(96, 165, 250, 0.55);
+    --m-border-dashed: rgba(147, 197, 253, 0.55);
+    --m-border-hover: rgba(147, 197, 253, 0.70);
+    --m-shadow: 0 0 0 1px rgba(96, 165, 250, 0.38), 0 6px 14px -6px rgba(0, 0, 0, 0.5);
+    --m-shadow-strong: 0 0 0 1px rgba(147, 197, 253, 0.30), 0 6px 14px -4px rgba(0, 0, 0, 0.5);
+    --m-shadow-hover: 0 0 0 1px rgba(96, 165, 250, 0.45), 0 8px 18px -6px rgba(0, 0, 0, 0.55);
+    --m-focus-ring: 0 0 0 1px rgba(96, 165, 250, 0.45), 0 0 0 3px rgba(96, 165, 250, 0.30);
+    --m-toolbar-height: 40px;
 }
-
-.mosaic-split .mosaic-split-line {
-    position: absolute;
-}
-
-.mosaic-split.-row {
-    margin-left: -3px;
-    width: 6px;
-    cursor: ew-resize;
-}
-
-.mosaic-split.-row .mosaic-split-line {
-    top: 0;
-    bottom: 0;
-    left: 3px;
-    right: 3px;
-}
-
-.mosaic-split.-column {
-    margin-top: -3px;
-    height: 6px;
-    cursor: ns-resize;
-}
-
-.mosaic-split.-column .mosaic-split-line {
-    top: 3px;
-    bottom: 3px;
-    left: 0;
-    right: 0;
-}
-
-.mosaic-tile {
-    position: absolute;
-    margin: 3px;
-}
-
-.mosaic-tile > * {
-    height: 100%;
-    width: 100%;
-}
-
-/* Drop Target Styles */
-.mosaic-drop-target {
-    position: relative;
-}
-
-.mosaic-drop-target.drop-target-hover .drop-target-container {
-    display: block;
-}
-
 
 .mosaic-window,
 .mosaic-preview {
@@ -100,64 +68,48 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background-color: #ffffff;
+    background: linear-gradient(135deg, var(--m-bg-start), var(--m-bg-end)), #ffffff;
     border-radius: 0.6rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--m-border);
+    box-shadow: var(--m-shadow);
+    transition: box-shadow 150ms ease, border-color 150ms ease, background-color 150ms ease;
 }
 
-.mosaic-window .mosaic-window-toolbar,
-.mosaic-preview .mosaic-window-toolbar {
-    z-index: 4;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-shrink: 0;
-    height: 3rem; /* 48px, matching shadcn CardHeader */
-    background-color: #ffffff; /* bg-white */
-    padding: 0 1rem; /* px-4 */
-    border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
-    border-top-left-radius: 0.5rem; /* rounded-t-lg */
-    border-top-right-radius: 0.5rem; /* rounded-t-lg */
-    cursor: move;
+.dark .mosaic-window,
+.dark .mosaic-preview {
+    background: linear-gradient(135deg, rgba(96, 165, 250, 0.28), rgba(96, 165, 250, 0.12));
+    border-color: rgba(96, 165, 250, 0.55);
+    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.38), 0 6px 14px -6px rgba(0, 0, 0, 0.5);
 }
 
-.mosaic-window .mosaic-window-title,
-.mosaic-preview .mosaic-window-title {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    font-size: 1.125rem; /* text-lg */
-    font-weight: 500; /* font-medium */
-    color: #374151; /* text-gray-700 */
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+.mosaic-window:hover,
+.mosaic-preview:hover {
+    border-color: var(--m-border-hover);
+    box-shadow: var(--m-shadow-hover);
 }
 
-.mosaic-window .mosaic-window-controls,
-.mosaic-preview .mosaic-window-controls {
-    display: flex;
-    height: 100%;
-    align-items: center;
-    gap: 0.5rem; /* space-x-2 */
+.dark .mosaic-window:hover,
+.dark .mosaic-preview:hover {
+    border-color: rgba(147, 197, 253, 0.70);
+    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.45), 0 8px 18px -6px rgba(0, 0, 0, 0.55);
 }
 
-.mosaic-window .mosaic-window-body,
-.mosaic-preview .mosaic-window-body {
-    position: relative;
-    flex: 1;
-    background-color: #ffffff; /* bg-white */
-    padding: 1rem; /* p-4 */
-    border-bottom-left-radius: 0.5rem; /* rounded-b-lg */
-    border-bottom-right-radius: 0.5rem; /* rounded-b-lg */
-    overflow: auto;
+.mosaic-window:focus-within,
+.mosaic-preview:focus-within {
+    border-color: rgba(59, 130, 246, 0.75);
+    box-shadow: var(--m-focus-ring);
 }
 
-/* Additional Actions Bar (if used) */
+.dark .mosaic-window:focus-within,
+.dark .mosaic-preview:focus-within {
+    border-color: rgba(147, 197, 253, 0.85);
+    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.45), 0 0 0 3px rgba(96, 165, 250, 0.30);
+}
+
 .mosaic-window .mosaic-window-additional-actions-bar,
 .mosaic-preview .mosaic-window-additional-actions-bar {
     position: absolute;
-    top: 3rem; /* Below the header */
+    top: 3rem;
     right: 0;
     left: 0;
     height: 0;
@@ -171,10 +123,9 @@
 
 .mosaic-window.additional-controls-open .mosaic-window-additional-actions-bar,
 .mosaic-preview.additional-controls-open .mosaic-window-additional-actions-bar {
-    height: 3rem; /* Show the bar */
+    height: 3rem;
 }
 
-/* Body Overlay (when additional controls are open) */
 .mosaic-window .mosaic-window-body-overlay,
 .mosaic-preview .mosaic-window-body-overlay {
     position: absolute;
@@ -193,14 +144,13 @@
     display: block;
 }
 
-/* Mosaic Preview Styles */
 .mosaic-window .mosaic-preview,
 .mosaic-preview .mosaic-preview {
     height: 100%;
     width: 100%;
     position: absolute;
     z-index: 0;
-    border: 1px solid #d1d5db; /* border-gray-300 */
+    border: 1px solid #d1d5db;
     max-height: 400px;
 }
 
@@ -210,19 +160,24 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+.custom-layout-container .mosaic-window .mosaic-window-body > * {
+    min-height: 0;
 }
 
 .mosaic-window .mosaic-preview h4,
 .mosaic-preview .mosaic-preview h4 {
     margin-bottom: 10px;
-    color: #374151; /* text-gray-700 */
+    color: #374151;
 }
 
-/* Adjusted Control Button Styles */
 .mosaic-window .mosaic-window-controls .separator,
 .mosaic-preview .mosaic-window-controls .separator {
     height: 20px;
-    border-left: 1px solid #e5e7eb; /* border-gray-200 */
+    border-left: 1px solid #e5e7eb;
     margin: 5px 4px;
 }
 
@@ -230,7 +185,7 @@
 .mosaic-preview .mosaic-window-controls .button {
     background: transparent;
     border: none;
-    color: #6b7280; /* text-gray-500 */
+    color: #6b7280;
     font-size: 1rem;
     cursor: pointer;
     padding: 0.5rem;
@@ -238,10 +193,124 @@
 
 .mosaic-window .mosaic-window-controls .button:hover,
 .mosaic-preview .mosaic-window-controls .button:hover {
-    color: #374151; /* text-gray-700 */
+    color: #374151;
 }
 
 .mosaic-window .mosaic-window-controls .button:focus,
 .mosaic-preview .mosaic-window-controls .button:focus {
     outline: none;
+}
+
+.mosaic-dnd-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 0.6rem;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.mosaic-dnd-overlay .edge {
+    position: absolute;
+    opacity: 0;
+    border-radius: 0.5rem; /* slight rounding */
+    backdrop-filter: saturate(160%) blur(2px);
+    -webkit-backdrop-filter: saturate(160%) blur(2px);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.22), rgba(59, 130, 246, 0.08));
+    border: 2px dashed rgba(59, 130, 246, 0.55);
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3), 0 4px 10px -2px rgba(0, 0, 0, 0.15);
+    transition: opacity 120ms ease, background-color 120ms ease, border-color 120ms ease;
+}
+
+.dark .mosaic-dnd-overlay .edge {
+    background: linear-gradient(135deg, rgba(96, 165, 250, 0.22), rgba(96, 165, 250, 0.05));
+    border-color: rgba(96, 165, 250, 0.55);
+    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.45), 0 0 0 3px rgba(96, 165, 250, 0.30);
+}
+
+.mosaic-dnd-overlay .edge.active {
+    opacity: 1;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.35), rgba(59, 130, 246, 0.15));
+    border-color: rgba(59, 130, 246, 0.85);
+}
+
+.dark .mosaic-dnd-overlay .edge.active {
+    background: linear-gradient(135deg, rgba(96, 165, 250, 0.4), rgba(96, 165, 250, 0.2));
+    border-color: rgba(147, 197, 253, 0.9);
+}
+
+.mosaic-dnd-overlay .edge-left {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+}
+
+.mosaic-dnd-overlay .edge-right {
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 50%;
+}
+
+.mosaic-dnd-overlay .edge-top {
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 50%;
+}
+
+.mosaic-dnd-overlay .edge-bottom {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 50%;
+}
+
+.custom-layout-container .mosaic-window > .mosaic-preview {
+    height: calc(100% - var(--m-toolbar-height, 40px)) !important;
+}
+
+.custom-layout-container .mosaic-window .mosaic-window-body > div.relative {
+    position: static !important;
+}
+
+.custom-layout-container .mosaic-preview,
+.custom-layout-container .mosaic-drop-target .drop-target-container .drop-target {
+    background: linear-gradient(135deg, var(--m-overlay-bg-start), var(--m-overlay-bg-end)) !important;
+    border: 2px dashed var(--m-border-dashed) !important;
+    box-shadow: var(--m-shadow-strong) !important;
+    border-radius: 0.6rem !important;
+    outline: none !important;
+    outline-offset: 0 !important;
+    backdrop-filter: saturate(150%) blur(2px) !important;
+    -webkit-backdrop-filter: saturate(150%) blur(2px) !important;
+}
+
+.custom-layout-container .mosaic-preview:hover,
+.custom-layout-container .mosaic-drop-target .drop-target-container .drop-target:hover {
+    border-color: var(--m-border-hover) !important;
+    box-shadow: var(--m-shadow-hover) !important;
+}
+
+.mosaic-preview { outline: none !important; outline-offset: 0 !important; }
+
+
+.custom-layout-container .mosaic-split:hover {
+    background: transparent !important;
+}
+
+.custom-layout-container .mosaic-split:hover .mosaic-split-line {
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.55) !important;
+    border-radius: 2px;
+}
+
+.dark .custom-layout-container .mosaic-split:hover .mosaic-split-line {
+    box-shadow: 0 0 0 1px rgba(147, 197, 253, 0.8) !important;
+}
+
+/* Restore scroll on the tile body */
+.custom-layout-container .mosaic-window .mosaic-window-body,
+.custom-layout-container .mosaic-preview .mosaic-window-body {
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch;
 }

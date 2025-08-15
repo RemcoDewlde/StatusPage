@@ -22,8 +22,10 @@ export const useRefreshStore = create<RefreshState>((set, get) => ({
       const loaded = await IntervalType.load();
       if (loaded) {
         set({ refreshInterval: loaded.interval, hydrated: true });
-        // propagate to statusPage polling
-        useStatusPageStore.getState().setRefreshInterval(loaded.interval);
+        // propagate to statusPage polling only if changed
+        if (useStatusPageStore.getState().refreshInterval !== loaded.interval) {
+          useStatusPageStore.getState().setRefreshInterval(loaded.interval);
+        }
       } else {
         set({ hydrated: true });
       }
@@ -33,14 +35,18 @@ export const useRefreshStore = create<RefreshState>((set, get) => ({
     }
   },
   setRefreshInterval: async (interval: number) => {
+    // no-op if unchanged
+    if (get().refreshInterval === interval) return;
     set({ refreshInterval: interval });
     try {
       await IntervalType.save(new IntervalType(interval));
     } catch (e) {
       console.error('Error saving refresh interval', e);
     }
-    // propagate to status page store
-    useStatusPageStore.getState().setRefreshInterval(interval);
+    // propagate to status page store if different
+    if (useStatusPageStore.getState().refreshInterval !== interval) {
+      useStatusPageStore.getState().setRefreshInterval(interval);
+    }
   },
 }));
 
@@ -56,4 +62,3 @@ useRefreshStore.subscribe((state, prev) => {
     }
   }
 });
-

@@ -117,7 +117,8 @@ const TileForm: React.FC<TileFormProps> = ({ onClose, tileId }) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const { title, ...tileSettings } = formData;
+        const { title, ...rest } = formData;
+        const tileSettings = { ...rest, needsConfig: false };
         if (tileId) {
             updateTile(tileId, tileSettings, title);
         } else {

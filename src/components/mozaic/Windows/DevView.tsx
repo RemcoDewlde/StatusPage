@@ -4,6 +4,10 @@ import { useApiSettingsStore } from '@/store/apiSettingsStore';
 import { useMosaicStore } from '@/store/mosaicStore';
 import MonacoEditor from '@monaco-editor/react';
 import { exists } from '@tauri-apps/plugin-fs';
+import { useApiDataStore } from '@/store/apiDataStore.ts';
+import { useToastStore } from '@/store/toastStore.ts';
+import { useDnDStore } from '@/store/dndStore.ts';
+import { useRefreshStore } from '@/store/refreshStore.ts';
 
 const formatTime = (date: Date | null) => {
     if (!date) return 'Never';
@@ -37,6 +41,12 @@ export const DevView = () => {
         error?: string;
         testResult?: string;
     }>({ available: false });
+
+    // === Zustand debug section state ===
+    const [showZustand, setShowZustand] = useState(false);
+    const [storeSnapshot, setStoreSnapshot] = useState<Record<string, unknown>>({});
+    const [liveEnabled, setLiveEnabled] = useState(false);
+    const liveUnsubsRef = useRef<Array<() => void>>([]);
 
     // Update last updated timestamps on data change
     Object.keys(data).forEach((pageId) => {
@@ -81,7 +91,7 @@ export const DevView = () => {
     useEffect(() => {
         const testFsAccess = async () => {
             try {
-                await exists('.');
+                await exists('.')
                 setFsAccess({ available: true, testResult: 'Successfully accessed filesystem' });
             } catch (error) {
                 setFsAccess({
@@ -93,6 +103,60 @@ export const DevView = () => {
         };
         testFsAccess();
     }, []);
+
+    // On-demand snapshot of key Zustand stores; functions are dropped by JSON.stringify
+    const captureZustandSnapshot = () => {
+        const snapshot = {
+            statusPageStore: useStatusPageStore.getState(),
+            apiSettingsStore: useApiSettingsStore.getState(),
+            mosaicStore: useMosaicStore.getState(),
+            dndStore: useDnDStore.getState(),
+            refreshStore: useRefreshStore.getState(),
+            // formDialogStore: useFormDialogStore.getState(),
+            toastStore: useToastStore.getState(),
+            apiDataStore: useApiDataStore.getState(),
+        } as Record<string, unknown>;
+        setStoreSnapshot(snapshot);
+    };
+
+    // Live mode: subscribe/unsubscribe to stores when toggled
+    useEffect(() => {
+        // Cleanup helper
+        const cleanup = () => {
+            if (liveUnsubsRef.current.length) {
+                liveUnsubsRef.current.forEach((u) => {
+                    try { u(); } catch {}
+                });
+                liveUnsubsRef.current = [];
+            }
+        };
+
+        if (!liveEnabled) {
+            cleanup();
+            return;
+        }
+
+        // Start with a fresh snapshot
+        captureZustandSnapshot();
+
+        const addSub = <T extends object>(name: string, store: { subscribe: (fn: (state: T, prev: T) => void) => () => void }) => {
+            const unsub = store.subscribe((state) => {
+                setStoreSnapshot((prev) => ({ ...prev, [name]: state }));
+            });
+            liveUnsubsRef.current.push(unsub);
+        };
+
+        // Attach subscriptions
+        addSub('statusPageStore', useStatusPageStore as any);
+        addSub('apiSettingsStore', useApiSettingsStore as any);
+        addSub('mosaicStore', useMosaicStore as any);
+        addSub('dndStore', useDnDStore as any);
+        addSub('refreshStore', useRefreshStore as any);
+        addSub('toastStore', useToastStore as any);
+        addSub('apiDataStore', useApiDataStore as any);
+
+        return cleanup;
+    }, [liveEnabled]);
 
     return (
         <div className="p-4">
@@ -147,6 +211,66 @@ export const DevView = () => {
                     </div>
                 )}
             </div>
+
+            {/* Zustand Stores Debug */}
+            <div className="mb-4">
+                <h3 className="font-semibold mb-1 flex items-center gap-2">
+                    Zustand Stores
+                    <button
+                        className="ml-2 px-2 py-1 bg-gray-200 text-gray-800 rounded text-xs border border-gray-300 hover:bg-gray-300"
+                        onClick={() => setShowZustand((v) => !v)}
+                    >
+                        {showZustand ? 'Hide' : 'Show'}
+                    </button>
+                    {showZustand && (
+                        <>
+                            <button
+                                className="px-2 py-1 bg-blue-500 text-white rounded text-xs"
+                                onClick={captureZustandSnapshot}
+                            >
+                                Snapshot
+                            </button>
+                            <button
+                                className={`px-2 py-1 rounded text-xs ${liveEnabled ? 'bg-green-600 text-white' : 'bg-gray-300 text-gray-800'}`}
+                                onClick={() => setLiveEnabled((v) => !v)}
+                                title="Toggle live updates"
+                            >
+                                {liveEnabled ? 'Live: On' : 'Live: Off'}
+                            </button>
+                        </>
+                    )}
+                </h3>
+                {showZustand && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {Object.entries(storeSnapshot).map(([name, state]) => (
+                            <div key={name} className="bg-gray-100 p-2 rounded overflow-hidden">
+                                <div className="text-xs font-semibold mb-1">{name}</div>
+                                <MonacoEditor
+                                    height="250px"
+                                    defaultLanguage="json"
+                                    value={JSON.stringify(state, (...args) => {
+                                        const v = (args as [string, unknown])[1];
+                                        return typeof v === 'function' ? '[Function]' : v;
+                                    }, 2)}
+                                    options={{
+                                        readOnly: true,
+                                        minimap: { enabled: false },
+                                        scrollBeyondLastLine: false,
+                                        wordWrap: 'on',
+                                        fontSize: 12,
+                                        lineNumbers: 'on',
+                                        stickyScroll: { enabled: false },
+                                    }}
+                                />
+                            </div>
+                        ))}
+                        {Object.keys(storeSnapshot).length === 0 && (
+                            <div className="text-xs text-gray-600">Click Snapshot to capture current store states.</div>
+                        )}
+                    </div>
+                )}
+            </div>
+
             <div className="mb-4">
                 <h3 className="font-semibold mb-1">Tracked Pages</h3>
                 <ul className="divide-y divide-gray-200">
