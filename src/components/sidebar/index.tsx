@@ -97,58 +97,83 @@ const SidebarItem = ({ icon: Icon, label, path, onClick, children, isCollapsed }
         </Button>
     );
 };
-
 const TilePalette = ({ isCollapsed }: { isCollapsed: boolean }) => {
-    const startDrag = useDnDStore(s => s.startDrag);
-    const endDrag = useDnDStore(s => s.endDrag);
+    const startDrag = useDnDStore((s) => s.startDrag)
+    const endDrag = useDnDStore((s) => s.endDrag)
     const items = [
-        { kind: 'summary', label: 'Summary' },
-        { kind: 'graph', label: 'Graph' },
-        { kind: 'welcome', label: 'Welcome' },
-        { kind: 'dev', label: 'Dev' },
-    ];
+        { kind: "summary", label: "Summary", icon: "📊" },
+        { kind: "graph", label: "Graph", icon: "📈" },
+        { kind: "welcome", label: "Welcome", icon: "👋" },
+        { kind: "dev", label: "Dev", icon: "⚡" },
+    ]
+
+    const getTileStyles = (kind: string) => {
+        const baseStyles =
+            "group cursor-grab active:cursor-grabbing relative overflow-hidden rounded-md border px-3 py-2 text-sm font-medium select-none transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+
+        switch (kind) {
+            case "summary":
+                return `${baseStyles} bg-gradient-to-br from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 border-slate-300 text-slate-700 hover:shadow-md hover:shadow-slate-200/50`
+            case "graph":
+                return `${baseStyles} bg-gradient-to-br from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-200 border-emerald-300 text-emerald-700 hover:shadow-md hover:shadow-emerald-200/50`
+            case "welcome":
+                return `${baseStyles} bg-gradient-to-br from-violet-50 to-violet-100 hover:from-violet-100 hover:to-violet-200 border-violet-300 text-violet-700 hover:shadow-md hover:shadow-violet-200/50`
+            case "dev":
+                return `${baseStyles} bg-gradient-to-br from-amber-50 to-amber-100 hover:from-amber-100 hover:to-amber-200 border-amber-300 text-amber-700 hover:shadow-md hover:shadow-amber-200/50`
+            default:
+                return `${baseStyles} bg-muted/40 hover:bg-muted/60 border-border text-foreground`
+        }
+    }
+
     return (
         <div className="mt-4 space-y-2">
-            {items.map(it => (
+            {items.map((it) => (
                 <div
                     key={it.kind}
                     draggable
                     onDragStart={(e) => {
-                        // Some browsers / WebViews require at least one setData call to start a drag
-                        e.dataTransfer.setData('text/plain', it.kind);
-                        e.dataTransfer.effectAllowed = 'copy';
-                        // Optional custom drag image for better UX
-                        const crt = document.createElement('div');
-                        crt.style.padding = '4px 8px';
-                        crt.style.position = 'fixed';
-                        crt.style.top = '-1000px';
-                        crt.style.fontSize = '12px';
-                        crt.style.fontFamily = 'sans-serif';
-                        crt.style.background = 'rgba(59,130,246,0.9)';
-                        crt.style.color = 'white';
-                        crt.style.borderRadius = '4px';
-                        crt.style.boxShadow = '0 2px 4px rgba(0,0,0,0.25)';
-                        crt.textContent = it.label;
-                        document.body.appendChild(crt);
-                        try { e.dataTransfer.setDragImage(crt, 8, 8); } catch {}
-                        // Cleanup after a tick (drag image snapshot is taken synchronously)
-                        setTimeout(() => { document.body.removeChild(crt); }, 0);
-                        startDrag(it.kind);
+                        e.dataTransfer.setData("text/plain", it.kind)
+                        e.dataTransfer.effectAllowed = "copy"
+                        const crt = document.createElement("div")
+                        crt.style.padding = "8px 12px"
+                        crt.style.position = "fixed"
+                        crt.style.top = "-1000px"
+                        crt.style.fontSize = "13px"
+                        crt.style.fontWeight = "500"
+                        crt.style.fontFamily = "system-ui, sans-serif"
+                        crt.style.background = "hsl(var(--muted))"
+                        crt.style.color = "hsl(var(--foreground))"
+                        crt.style.borderRadius = "6px"
+                        crt.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)"
+                        crt.style.border = "1px solid hsl(var(--border))"
+                        crt.textContent = `${it.icon} ${it.label}`
+                        document.body.appendChild(crt)
+                        try {
+                            e.dataTransfer.setDragImage(crt, 12, 12)
+                        } catch {}
+                        setTimeout(() => {
+                            document.body.removeChild(crt)
+                        }, 0)
+                        startDrag(it.kind)
                     }}
                     onDragEnd={() => {
-                        // If no drop target accepted it, ensure state resets
-                        endDrag();
+                        endDrag()
                     }}
-                    className="cursor-grab active:cursor-grabbing rounded border bg-muted/40 px-2 py-1 text-xs flex items-center hover:bg-muted transition-colors select-none"
-                    title={it.label}
+                    className={getTileStyles(it.kind)}
+                    title={`Drag to add ${it.label}`}
                 >
-                    {!isCollapsed && <span>{it.label}</span>}
-                    {isCollapsed && <span>{it.label.charAt(0).toUpperCase()}</span>}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out" />
+
+                    <div className="flex items-center gap-2 relative z-10">
+                        <span className="text-sm leading-none">{it.icon}</span>
+                        {!isCollapsed && <span>{it.label}</span>}
+                        {isCollapsed && <span className="sr-only">{it.label}</span>}
+                    </div>
                 </div>
             ))}
         </div>
-    );
-};
+    )
+}
 
 const Sidebar = () => {
     const [isCollapsed, setIsCollapsed] = useState(true);
