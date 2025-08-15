@@ -51,16 +51,17 @@ const Home = () => {
         return 'bottom';
     };
 
-    const buildSettingsForKind = (kind: string) => ({
+    const buildSettingsForKind = (kind: string, needsConfig?: boolean) => ({
         viewType: kind,
         api: '',
         additionalSettings: {},
+        needsConfig: !!needsConfig,
     });
 
     const handleDropNewTile = (targetId: string) => {
         if (!dragging) return;
         const edge = hover?.edge || 'right';
-        const settings = buildSettingsForKind(dragging.tileKind);
+        const settings = buildSettingsForKind(dragging.tileKind, dragging.needsConfig);
         if (addTileRelative) {
             addTileRelative(targetId, edge, settings, `${dragging.tileKind} tile`);
         }
@@ -173,6 +174,8 @@ const Home = () => {
                                          api={settings.api}
                                          additionalSettings={settings.additionalSettings}
                                          dimensions={tileDimensions[id]}
+                                         needsConfig={settings.needsConfig}
+                                         tileId={id}
                                      />
                                  </div>
                              </div>

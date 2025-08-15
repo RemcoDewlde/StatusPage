@@ -17,10 +17,11 @@ const ZeroState = () => {
         openDialog();
     };
 
-    const buildSettingsForKind = (kind: string) => ({
+    const buildSettingsForKind = (kind: string, needsConfig?: boolean) => ({
         viewType: kind,
         api: '',
         additionalSettings: {},
+        needsConfig: !!needsConfig,
     });
 
     const handleDragOver = (e: React.DragEvent) => {
@@ -40,7 +41,7 @@ const ZeroState = () => {
     const handleDrop = (e: React.DragEvent) => {
         if (!dragging) return;
         e.preventDefault();
-        const settings = buildSettingsForKind(dragging.tileKind);
+        const settings = buildSettingsForKind(dragging.tileKind, dragging.needsConfig);
         addTile(settings, `${dragging.tileKind} tile`);
         setIsDragOver(false);
         endDrag();

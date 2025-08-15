@@ -102,10 +102,10 @@ const TilePalette = ({ isCollapsed }: { isCollapsed: boolean }) => {
     const startDrag = useDnDStore((s) => s.startDrag)
     const endDrag = useDnDStore((s) => s.endDrag)
     const items = [
-        { kind: "summary", label: "Summary", icon: "📊" },
-        { kind: "graph", label: "Graph", icon: "📈" },
-        { kind: "welcome", label: "Welcome", icon: "👋" },
-        { kind: "dev", label: "Dev", icon: "⚡" },
+        { kind: "summary", label: "Summary", icon: "📊", needsConfig: true },
+        { kind: "graph", label: "Graph", icon: "📈", needsConfig: true },
+        { kind: "welcome", label: "Welcome", icon: "👋", needsConfig: false },
+        { kind: "dev", label: "Debug", icon: "⚡", needsConfig: false },
     ]
 
     const getTileStyles = (kind: string) => {
@@ -155,7 +155,7 @@ const TilePalette = ({ isCollapsed }: { isCollapsed: boolean }) => {
                         setTimeout(() => {
                             document.body.removeChild(crt)
                         }, 0)
-                        startDrag(it.kind)
+                        startDrag(it.kind, it.needsConfig)
                     }}
                     onDragEnd={() => {
                         endDrag()

@@ -4,6 +4,7 @@ export type DropEdge = 'left'|'right'|'top'|'bottom';
 
 interface DraggingTile {
   tileKind: string; // eg viewType or template id
+  needsConfig?: boolean;
 }
 
 interface HoverState {
@@ -14,7 +15,7 @@ interface HoverState {
 interface DnDState {
   dragging?: DraggingTile;
   hover?: HoverState;
-  startDrag: (tileKind: string) => void;
+  startDrag: (tileKind: string, needsConfig?: boolean) => void;
   setHover: (targetId: string, edge: DropEdge) => void;
   clearHover: () => void;
   endDrag: () => void;
@@ -23,18 +24,8 @@ interface DnDState {
 export const useDnDStore = create<DnDState>((set) => ({
   dragging: undefined,
   hover: undefined,
-  startDrag: (tileKind) => set((s) => {
-    // Avoid resetting if already dragging same kind
-    if (s.dragging?.tileKind === tileKind) return s;
-    return { dragging: { tileKind } };
-  }),
-  setHover: (targetId, edge) => set((s) => {
-    // Only set hover when a drag is active
-    if (!s.dragging) return s;
-    // Skip if hover didn't actually change
-    if (s.hover && s.hover.targetId === targetId && s.hover.edge === edge) return s;
-    return { hover: { targetId, edge } };
-  }),
-  clearHover: () => set((s) => (s.hover ? { hover: undefined } : s)),
-  endDrag: () => set((s) => (s.dragging || s.hover ? { dragging: undefined, hover: undefined } : s)),
+  startDrag: (tileKind, needsConfig) => set({ dragging: { tileKind, needsConfig }}),
+  setHover: (targetId, edge) => set((s) => s.dragging ? { hover: { targetId, edge }} : s),
+  clearHover: () => set({ hover: undefined }),
+  endDrag: () => set({ dragging: undefined, hover: undefined }),
 }));
