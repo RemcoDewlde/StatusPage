@@ -1,10 +1,11 @@
 # 🚦StatusPage
 
 [![release for main](https://github.com/RemcoDewlde/StatusPage/actions/workflows/publish_and_release.yml/badge.svg)](https://github.com/RemcoDewlde/StatusPage/actions/workflows/publish_and_release.yml)
+[![PR Check](https://github.com/RemcoDewlde/StatusPage/actions/workflows/pr_check.yml/badge.svg)](https://github.com/RemcoDewlde/StatusPage/actions/workflows/pr_check.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.4.5-blue)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3.4-38B2AC)](https://tailwindcss.com/)
-[![Tauri](https://img.shields.io/badge/Tauri-1.6.7-orange)](https://tauri.app/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.19-38B2AC)](https://tailwindcss.com/)
+[![Tauri](https://img.shields.io/badge/Tauri-2.10.x-orange)](https://tauri.app/)
 
 StatusPage is a modern, customizable status page application built with Tauri, TypeScript, and Tailwind CSS. It
 allows you to create a beautiful and responsive status page for your services, providing real-time updates to your
